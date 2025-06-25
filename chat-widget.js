@@ -289,7 +289,7 @@
             if (sessionId) {
                 headers["lh-session-id"] = sessionId;
               }
-            fetch('http://localhost:8080/actuator/health', {        
+            fetch('https://example.com', {        
                 method: 'GET',
                 headers: headers
             })
