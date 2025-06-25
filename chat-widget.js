@@ -2,7 +2,7 @@
 (function() {
     // Hardcoded configuration
     const config = {
-        webhookUrl: 'https://leadhookai.railway.internal:8080/app-backend-api/v1/chat',
+        webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
         title: window.ChatWidgetConfig.title || 'AI Support Assistant',
         welcomeMessage: window.ChatWidgetConfig.welcomeMessage || 'Please provide your information to start chatting.',
         recaptchaSiteKey: window.ChatWidgetConfig.recaptchaSiteKey || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
