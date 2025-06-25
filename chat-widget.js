@@ -3,9 +3,9 @@
     // Hardcoded configuration
     const config = {
         webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
-        title: window.ChatWidgetConfig.title || 'AI Support Assistant',
-        welcomeMessage: window.ChatWidgetConfig.welcomeMessage || 'Please provide your information to start chatting.',
-        recaptchaSiteKey: window.ChatWidgetConfig.recaptchaSiteKey || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+        title: window.ChatWidgetConfig.title || 'LeadhookAi Support Assistant',
+        welcomeMessage: window.ChatWidgetConfig.welcomeMessage || 'Hello stranger, welcome to the demo.',
+        recaptchaSiteKey: window.ChatWidgetConfig.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf'
     };
     
     // Load reCAPTCHA script
