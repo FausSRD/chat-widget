@@ -289,7 +289,7 @@
             if (sessionId) {
                 headers["lh-session-id"] = sessionId;
               }
-            fetch('https://example.com', {        
+            fetch('https://leadhookai-pre.up.railway.app/actuator/health', {        
                 method: 'GET',
                 headers: headers
             })
