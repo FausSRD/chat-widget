@@ -249,3 +249,36 @@
         transform: translateY(-5px);
     }
 }
+
+.quick-reply-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    /* Removed justify-content: center; */
+    align-self: flex-start;
+    max-width: 80%; /* Keep max-width for the container */
+    align-items: flex-start; /* Align items to the start (left) */
+}
+
+.quick-reply-button {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 15px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quick-reply-button:hover {
+    background-color: #d0d0d0;
+}
+
+.quick-reply-button:active {
+    background-color: #c0c0c0;
+    transform: translateY(1px);
+}

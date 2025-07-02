@@ -3,6 +3,7 @@
     // Hardcoded configuration
     const config = {
         webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
+        // webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
         title: window.ChatWidgetConfig.title || 'LeadhookAi Support Assistant',
         welcomeMessage: window.ChatWidgetConfig.welcomeMessage || 'Hello stranger, welcome to the demo.',
         recaptchaSiteKey: window.ChatWidgetConfig.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf'
@@ -192,9 +193,13 @@
             });
         }
         
-        function sendMessage() {
-            const messageText = chatInput.value.trim();
+        function sendMessage(message) {
+            const messageText = message || chatInput.value.trim();
             if (!messageText || isWaitingForResponse) return;
+            const quickReplyContainer = chatMessages.querySelector('.quick-reply-container');
+            if (quickReplyContainer) {
+                quickReplyContainer.remove();
+            }
             // Clear input
             chatInput.value = '';
             // Add user message to chat
@@ -282,6 +287,29 @@
             chatInputContainer.style.display = 'flex';
             // Add welcome message
             addBotMessage(config.welcomeMessage);
+            addQuickReplyButtons([
+                'Browse Newest Inventory',
+                'Apply for Financing',
+                'Schedule a Test Ride'
+            ]);
+        }
+
+        function addQuickReplyButtons(options) {
+            const quickReplyContainer = document.createElement('div');
+            quickReplyContainer.className = 'quick-reply-container';
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'quick-reply-button';
+                button.textContent = option;
+                button.addEventListener('click', () => {
+                    sendMessage(option);
+                    quickReplyContainer.remove(); // Remove buttons after one is clicked
+                });
+                quickReplyContainer.appendChild(button);
+            });
+            chatMessages.appendChild(quickReplyContainer);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         function makePing() {
