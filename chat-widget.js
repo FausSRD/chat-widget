@@ -21,31 +21,66 @@
     cssLink.rel = 'stylesheet';
     cssLink.href = 'https://lhai-chat-widget-pre.up.railway.app/chat-widget.css';
     document.head.appendChild(cssLink);
+
+    const html = `
+        <div class="chat-widget">
+            <div class="chat-launcher">
+                <span class="chat-launcher-icon">💬</span>
+            </div>
+            <div class="chat-window">
+                <div class="chat-header">
+                    <h3 class="chat-title">AI Support Assistant</h3>
+                    <button class="chat-close">&times;</button>
+                </div>
+                <div class="registration-form">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Name</label>
+                        <input type="text" id="name" class="form-input" placeholder="Enter your name">
+                        <div class="error-message" id="name-error">Please enter your name</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" class="form-input" placeholder="Enter your email">
+                        <div class="error-message" id="email-error">Please enter a valid email</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="phone">Phone Number</label>
+                        <input type="tel" id="phone" class="form-input" placeholder="Enter your phone number">
+                        <div class="error-message" id="phone-error">Please enter a valid phone number</div>
+                    </div>
+                    <div class="g-recaptcha" data-sitekey=""></div>
+                    <div class="error-message" id="recaptcha-error">Please complete the reCAPTCHA</div>
+                    <button type="button" class="submit-button" id="submit-registration">Start Chat</button>
+                </div>
+                <div class="chat-messages" style="display: none;"></div>
+                <div class="chat-input-container" style="display: none;">
+                    <textarea class="chat-input" placeholder="Type your message..."></textarea>
+                    <button class="send-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    const widgetContainer = tempDiv.firstChild;
+    document.body.appendChild(widgetContainer);
     
-    // Load HTML template
-    fetch('https://lhai-chat-widget-pre.up.railway.app/chat-template.html')
-        .then(response => response.text())
-        .then(html => {
-            // Insert the HTML into the document
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-            const widgetContainer = tempDiv.firstChild;
-            document.body.appendChild(widgetContainer);
-            
-            // Set reCAPTCHA site key
-            const recaptchaDiv = widgetContainer.querySelector('.g-recaptcha');
-            recaptchaDiv.setAttribute('data-sitekey', config.recaptchaSiteKey);
-            
-            // Set title
-            const titleElement = widgetContainer.querySelector('.chat-title');
-            titleElement.textContent = config.title;
-            
-            // Initialize event listeners and functionality
-            initializeChat(widgetContainer, config);
-        })
-        .catch(error => {
-            console.error('Error loading chat template:', error);
-        });
+    // Set reCAPTCHA site key
+    const recaptchaDiv = widgetContainer.querySelector('.g-recaptcha');
+    recaptchaDiv.setAttribute('data-sitekey', config.recaptchaSiteKey);
+    
+    // Set title
+    const titleElement = widgetContainer.querySelector('.chat-title');
+    titleElement.textContent = config.title;
+    
+    // Initialize event listeners and functionality
+    initializeChat(widgetContainer, config);
     
     function initializeChat(widgetContainer, config) {
 
