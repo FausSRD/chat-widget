@@ -19,11 +19,11 @@
     // Load CSS
     const cssLink = document.createElement('link');
     cssLink.rel = 'stylesheet';
-    cssLink.href = 'chat-widget.css';
+    cssLink.href = 'https://lhai-chat-widget-pre.up.railway.app/chat-widget.css';
     document.head.appendChild(cssLink);
     
     // Load HTML template
-    fetch('chat-template.html')
+    fetch('https://lhai-chat-widget-pre.up.railway.app/chat-template.html')
         .then(response => response.text())
         .then(html => {
             // Insert the HTML into the document
