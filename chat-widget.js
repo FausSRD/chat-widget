@@ -1,6 +1,4 @@
-// Immediately-invoked function expression to avoid polluting global scope
 (function() {
-    // Hardcoded configuration
     const config = {
         webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
         // webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
@@ -298,9 +296,13 @@
         }
         
         function addBotMessage(text) {
+            // Reemplazar saltos de línea por <br>
+            text = text.replace(/\n/g, '<br>');
+            // Reemplazar enlaces estilo Markdown por <a>
+            text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
             const messageElement = document.createElement('div');
             messageElement.className = 'message bot-message';
-            messageElement.innerHTML =text.replace(/\n/g, '<br>');
+            messageElement.innerHTML = text;
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
