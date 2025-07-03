@@ -26,6 +26,23 @@
     transition: transform 0.3s ease;
 }
 
+.chat-launcher::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    display: none;
+    box-shadow: 0 0 2px #fff; /* borde suave si querés contraste */
+}
+
+.chat-launcher.unread::after {
+    display: block;
+}
+
 .chat-launcher:hover {
     transform: scale(1.05);
 }

@@ -18,6 +18,7 @@
     const cssLink = document.createElement('link');
     cssLink.rel = 'stylesheet';
     cssLink.href = 'https://lhai-chat-widget-pre.up.railway.app/chat-widget.css';
+    // cssLink.href = './chat-widget.css';
     document.head.appendChild(cssLink);
 
     const html = `
@@ -101,6 +102,7 @@
         // Event listeners for every action
         chatLauncher.addEventListener('click', function() {
             chatWindow.classList.add('active');
+            chatLauncher.classList.remove('unread');
         });
 
         closeButton.addEventListener('click', function() {
@@ -305,6 +307,10 @@
             messageElement.innerHTML = text;
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            if (!chatWindow.classList.contains('active')) {
+                chatLauncher.classList.add('unread');
+            }
         }
         
         function isValidEmail(email) {
