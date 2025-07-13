@@ -68,11 +68,13 @@
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
     const widgetContainer = tempDiv.querySelector('.chat-widget');
-    widgetContainer.style.visibiliy = 'hidden';
+    widgetContainer.style.visibility = 'hidden';
+    widgetContainer.style.display = 'none';
     document.body.appendChild(widgetContainer);
 
     cssLink.onload = function() {
-        widgetContainer.style.visibiliy = 'visible';
+        widgetContainer.style.removeProperty('display');
+        widgetContainer.style.visibility = 'visible';
     };
     
     // Set reCAPTCHA site key
