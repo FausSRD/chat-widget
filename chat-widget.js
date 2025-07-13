@@ -68,7 +68,12 @@
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
     const widgetContainer = tempDiv.querySelector('.chat-widget');
+    widgetContainer.style.visibiliy = 'hidden';
     document.body.appendChild(widgetContainer);
+
+    cssLink.onload = function() {
+        widgetContainer.style.visibiliy = 'visible';
+    };
     
     // Set reCAPTCHA site key
     const recaptchaDiv = widgetContainer.querySelector('.g-recaptcha');
