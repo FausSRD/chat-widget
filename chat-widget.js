@@ -18,8 +18,7 @@
     const cssLink = document.createElement('link');
     cssLink.rel = 'stylesheet';
     cssLink.href = 'https://lhai-chat-widget-pre.up.railway.app/chat-widget.css';
-    // cssLink.href = './chat-widget.css';
-    document.head.appendChild(cssLink);
+
 
     const html = `
     <div class="chat-widget">
@@ -64,7 +63,7 @@
         </div>
     </div>
     `;
-
+    
     // Crear el HTML pero no insertarlo todavía
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
@@ -75,7 +74,7 @@
     
     // Esperar a que el CSS se cargue antes de insertar y mostrar el widget
     cssLink.onload = function() {
-    // Insertar el widget en el DOM
+        // Insertar el widget en el DOM
         document.body.appendChild(widgetContainer);
         
         // Configurar reCAPTCHA y título
@@ -92,12 +91,10 @@
         
         // Inicializar el chat
         initializeChat(widgetContainer, config);
-    };
+    };  
 
-// Agregar el CSS al documento
-document.head.appendChild(cssLink);
-    // Initialize event listeners and functionality
-    initializeChat(widgetContainer, config);
+    // Agregar el CSS al documento
+    document.head.appendChild(cssLink);
     
     function initializeChat(widgetContainer, config) {
 
