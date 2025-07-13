@@ -14,7 +14,7 @@
     recaptchaScript.defer = true;
     document.head.appendChild(recaptchaScript);
     
-    // Load CSS
+    // Load CSS first
     const cssLink = document.createElement('link');
     cssLink.rel = 'stylesheet';
     cssLink.href = 'https://lhai-chat-widget-pre.up.railway.app/chat-widget.css';
@@ -65,24 +65,37 @@
     </div>
     `;
 
+    // Crear el HTML pero no insertarlo todavía
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
-    // Después de cargar el CSS y antes de inicializar los event listeners
     const widgetContainer = tempDiv.querySelector('.chat-widget');
-    document.body.appendChild(widgetContainer);
-
-    // Esperar a que el CSS se cargue
+    
+    // Ocultar el widget inicialmente
+    widgetContainer.style.display = 'none';
+    
+    // Esperar a que el CSS se cargue antes de insertar y mostrar el widget
     cssLink.onload = function() {
-        // Marcar el widget como inicializado
-        widgetContainer.classList.add('initialized');
+    // Insertar el widget en el DOM
+        document.body.appendChild(widgetContainer);
+        
+        // Configurar reCAPTCHA y título
+        const recaptchaDiv = widgetContainer.querySelector('.g-recaptcha');
+        recaptchaDiv.setAttribute('data-sitekey', config.recaptchaSiteKey);
+        
+        const titleElement = widgetContainer.querySelector('.chat-title');
+        titleElement.textContent = config.title;
+        
+        // Mostrar el widget con una pequeña demora para asegurar que los estilos se apliquen
+        setTimeout(() => {
+            widgetContainer.style.display = '';
+        }, 100);
+        
+        // Inicializar el chat
+        initializeChat(widgetContainer, config);
     };
-    const recaptchaDiv = widgetContainer.querySelector('.g-recaptcha');
-    recaptchaDiv.setAttribute('data-sitekey', config.recaptchaSiteKey);
-    
-    // Set title
-    const titleElement = widgetContainer.querySelector('.chat-title');
-    titleElement.textContent = config.title;
-    
+
+// Agregar el CSS al documento
+document.head.appendChild(cssLink);
     // Initialize event listeners and functionality
     initializeChat(widgetContainer, config);
     
