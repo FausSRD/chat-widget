@@ -67,10 +67,15 @@
 
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
+    // Después de cargar el CSS y antes de inicializar los event listeners
     const widgetContainer = tempDiv.querySelector('.chat-widget');
     document.body.appendChild(widgetContainer);
-    
-    // Set reCAPTCHA site key
+
+    // Esperar a que el CSS se cargue
+    cssLink.onload = function() {
+        // Marcar el widget como inicializado
+        widgetContainer.classList.add('initialized');
+    };
     const recaptchaDiv = widgetContainer.querySelector('.g-recaptcha');
     recaptchaDiv.setAttribute('data-sitekey', config.recaptchaSiteKey);
     
