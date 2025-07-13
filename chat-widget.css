@@ -7,14 +7,6 @@
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --radius: 12px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    visibility: hidden; /* Ocultar inicialmente */
-    opacity: 0; /* Comenzar transparente */
-    transition: opacity 0.3s ease; /* Transición suave */
-}
-
-.chat-widget.initialized {
-    visibility: visible;
-    opacity: 1;
 }
 
 .chat-launcher {

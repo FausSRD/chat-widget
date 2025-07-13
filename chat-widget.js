@@ -14,11 +14,12 @@
     recaptchaScript.defer = true;
     document.head.appendChild(recaptchaScript);
     
-    // Load CSS first
+    // Load CSS
     const cssLink = document.createElement('link');
     cssLink.rel = 'stylesheet';
     cssLink.href = 'https://lhai-chat-widget-pre.up.railway.app/chat-widget.css';
-
+    // cssLink.href = './chat-widget.css';
+    document.head.appendChild(cssLink);
 
     const html = `
     <div class="chat-widget">
@@ -63,38 +64,22 @@
         </div>
     </div>
     `;
-    
-    // Crear el HTML pero no insertarlo todavía
+
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
     const widgetContainer = tempDiv.querySelector('.chat-widget');
+    document.body.appendChild(widgetContainer);
     
-    // Ocultar el widget inicialmente
-    widgetContainer.style.display = 'none';
+    // Set reCAPTCHA site key
+    const recaptchaDiv = widgetContainer.querySelector('.g-recaptcha');
+    recaptchaDiv.setAttribute('data-sitekey', config.recaptchaSiteKey);
     
-    // Esperar a que el CSS se cargue antes de insertar y mostrar el widget
-    cssLink.onload = function() {
-        // Insertar el widget en el DOM
-        document.body.appendChild(widgetContainer);
-        
-        // Configurar reCAPTCHA y título
-        const recaptchaDiv = widgetContainer.querySelector('.g-recaptcha');
-        recaptchaDiv.setAttribute('data-sitekey', config.recaptchaSiteKey);
-        
-        const titleElement = widgetContainer.querySelector('.chat-title');
-        titleElement.textContent = config.title;
-        
-        // Mostrar el widget con una pequeña demora para asegurar que los estilos se apliquen
-        setTimeout(() => {
-            widgetContainer.style.display = '';
-        }, 100);
-        
-        // Inicializar el chat
-        initializeChat(widgetContainer, config);
-    };  
-
-    // Agregar el CSS al documento
-    document.head.appendChild(cssLink);
+    // Set title
+    const titleElement = widgetContainer.querySelector('.chat-title');
+    titleElement.textContent = config.title;
+    
+    // Initialize event listeners and functionality
+    initializeChat(widgetContainer, config);
     
     function initializeChat(widgetContainer, config) {
 
