@@ -1,7 +1,7 @@
 (function() {
     const config = {
-        webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
-        // webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
+        // webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
+        webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
         title: window.ChatWidgetConfig.title || 'LeadhookAi Support Assistant',
         welcomeMessage: window.ChatWidgetConfig.welcomeMessage || 'Hello stranger, welcome to the demo.',
         recaptchaSiteKey: window.ChatWidgetConfig.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf'
@@ -85,6 +85,7 @@
 
         // State variables
         let sessionId = localStorage.getItem("sessionId") || null;
+        let firstPing = false;
         let userData = null;
         let isWaitingForResponse = false;
         
@@ -103,6 +104,11 @@
         chatLauncher.addEventListener('click', function() {
             chatWindow.classList.add('active');
             chatLauncher.classList.remove('unread');
+            // Solo hacer ping la primera vez que se abre el chat
+            if (!firstPing) {
+                makePing();
+                firstPing = true;
+            }
         });
 
         closeButton.addEventListener('click', function() {
@@ -123,7 +129,8 @@
             sendMessage(); // Llamar a sendMessage sin parámetros
         });
         
-        makePing();
+        // Eliminar esta línea que está fuera del evento
+        // makePing();
 
         // Functions
         function handleRegistration() {
@@ -266,7 +273,9 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Message sending failed');
+                    return response.json().then(errorBody => {
+                        throw new Error(manageExceptions(errorBody));
+                    });
                 }
                 return response.json();
             })
@@ -282,7 +291,7 @@
                 // Remove typing indicator
                 chatMessages.removeChild(typingIndicator);
                 // Add error message
-                addBotMessage('Sorry, there was an error processing your message. Please try again.');
+                addBotMessage(error.message || 'Sorry, there was an error processing your message. Please try again.');
             })
             .finally(() => {
                 isWaitingForResponse = false;
@@ -363,7 +372,7 @@
             if (sessionId) {
                 headers["lh-session-id"] = sessionId;
               }
-            fetch('https://leadhookai-pre.up.railway.app/actuator/health', {        
+            fetch(config.webhookUrl + '/login/still-alive', {        
                 method: 'GET',
                 headers: headers
             })
@@ -380,12 +389,13 @@
         }
     }
 
-    // Not allow multiple clicks
-    function debounce(func, delay) {
-        let timer;
-        return function(...args) {
-            clearTimeout(timer);
-            timer = setTimeout(() => func.apply(this, args), delay);
-        };
+    function manageExceptions(error) {
+        let errorCode = error.code;
+        switch (errorCode) {
+            case 'SESSION_ID_NOT_FOUND': return 'Your session has ended. Please refresh the page to start a new one.';
+            case 'MAX_SESSION_COUNT_REACHED': return 'Our system has reached its hourly limit. Please try again later.';
+            case 'MAX_LIMIT_COUNT_REACHED': return 'Message limit reached! You’ll be able to send more messages in around 30 minutes.';
+            default: return 'Sorry, there was an error processing your message. Please try again.';
+        }
     }
 })();
