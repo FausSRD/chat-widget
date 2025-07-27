@@ -1,12 +1,10 @@
 (function() {
-  // 1) Función que espera al DOM
   function onReady(fn) {
     if (document.readyState !== 'loading') fn()
     else document.addEventListener('DOMContentLoaded', fn)
   }
 
   onReady(() => {
-    // 2) Inyecta el CSS del launcher
     const loaderCSS = document.createElement('style')
     loaderCSS.textContent = `
       .chat-launcher { position: fixed; bottom: 20px; right: 20px;
@@ -27,14 +25,12 @@
     `
     document.head.appendChild(loaderCSS)
 
-    // 3) Crea el launcher
     const launcher = document.createElement('div')
     launcher.id = 'chat-launcher'
     launcher.className = 'chat-launcher'
     launcher.innerHTML = '<span class="chat-launcher-icon">💬</span>'
     document.body.appendChild(launcher)
 
-    // 4) La función que carga y arranca TODO el widget
     function loadWidgetCore() {
       if (window.widgetCoreLoaded) return
       window.widgetCoreLoaded = true
@@ -318,7 +314,6 @@
         `
         document.head.appendChild(completeStyle)
 
-        // Inyecta el HTML del widget
         const html = `
         <div class="chat-widget">
             <div class="chat-window">
@@ -364,7 +359,6 @@
         const widgetContainer = temp.content.firstElementChild
         document.body.appendChild(widgetContainer)
 
-        // Ajusta sitekey y título
         widgetContainer
             .querySelector('.g-recaptcha')
             .setAttribute('data-sitekey', config.recaptchaSiteKey)
@@ -372,7 +366,7 @@
             .querySelector('.chat-title')
             .textContent = config.title
 
-        // Inicializa toda la lógica del chat
+
         initializeChat(widgetContainer, config)
 
         function initializeChat(widgetContainer, config) {
