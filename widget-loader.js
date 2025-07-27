@@ -64,7 +64,7 @@
 
       const script = document.createElement('script')
       script.id = 'widget-core-script'
-      script.src = './widget-core.js'
+      script.src = 'https://lhai-chat-widget-pre.up.railway.app/widget-core.js'
       script.onload = () => {
         launcher.click()
       }
