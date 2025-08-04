@@ -12,7 +12,7 @@
         border-radius: 50%; display: flex; align-items: center;
         justify-content: center; cursor: pointer;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease; z-index: 999;
+        transition: transform 0.3s ease; z-index: 9999;
       }
       .chat-launcher .chat-launcher-icon { font-size: 28px; }
       .chat-launcher::after { content: '';
@@ -39,8 +39,8 @@
       const config = {
         webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
         // webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
-        title: configSource.title || 'LeadhookAi Support Assistant',
-        welcomeMessage: configSource.welcomeMessage || 'Hello stranger, welcome to the demo.',
+        title: configSource.title || 'DealerPRO Support Assistant',
+        welcomeMessage: configSource.welcomeMessage || "Hi! I'm your virtual assistant. How can i help you?",
         recaptchaSiteKey: configSource.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf',
         quickReplies: configSource.quickReplies || ['Browse Newest Inventory','Apply for Financing','Schedule a Test Ride'],
       }
@@ -76,7 +76,7 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
-            z-index: 1000;
+            z-index: 9999;
             transition: all 0.3s ease;
         }
 
