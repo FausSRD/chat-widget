@@ -23,8 +23,8 @@
       .chat-launcher.unread::after { display: block; }
       .chat-launcher:hover { transform: scale(1.05); }
     `
-    document.head.appendChild(loaderCSS)
-
+    shadowRoot.appendChild(loaderCSS)
+    
     const launcher = document.createElement('div')
     launcher.id = 'chat-launcher'
     launcher.className = 'chat-launcher'
@@ -354,10 +354,10 @@
             </div>
         </div>
         `
-        const temp = document.createElement('template')
-        temp.innerHTML = html.trim()
-        const widgetContainer = temp.content.firstElementChild
+        const widgetContainer = document.createElement('div')
+        const shadowRoot = widgetContainer.attachShadow({ mode: 'open' })
         document.body.appendChild(widgetContainer)
+        shadowRoot.appendChild(temp.content)
 
         widgetContainer
             .querySelector('.g-recaptcha')
