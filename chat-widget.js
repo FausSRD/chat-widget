@@ -7,28 +7,28 @@
   onReady(() => {
     const loaderCSS = document.createElement('style')
     loaderCSS.textContent = `
-      .chat-launcher { position: fixed; bottom: 20px; right: 20px;
+      .lh-chat-launcher { position: fixed; bottom: 20px; right: 20px;
         width: 60px; height: 60px; background-color: #4f46e5;
         border-radius: 50%; display: flex; align-items: center;
         justify-content: center; cursor: pointer;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease; z-index: 9999;
       }
-      .chat-launcher .chat-launcher-icon { font-size: 28px; }
-      .chat-launcher::after { content: '';
+      .lh-chat-launcher .lh-chat-launcher-icon { font-size: 28px; }
+      .lh-chat-launcher::after { content: '';
         position: absolute; top: 10px; right: 10px;
         width: 10px; height: 10px; background-color: red;
         border-radius: 50%; display: none; box-shadow: 0 0 2px #fff;
       }
-      .chat-launcher.unread::after { display: block; }
-      .chat-launcher:hover { transform: scale(1.05); }
+      .lh-chat-launcher.unread::after { display: block; }
+      .lh-chat-launcher:hover { transform: scale(1.05); }
     `
-    shadowRoot.appendChild(loaderCSS)
-    
+    document.head.appendChild(loaderCSS)
+
     const launcher = document.createElement('div')
-    launcher.id = 'chat-launcher'
-    launcher.className = 'chat-launcher'
-    launcher.innerHTML = '<span class="chat-launcher-icon">💬</span>'
+    launcher.id = 'lh-chat-launcher'
+    launcher.className = 'lh-chat-launcher'
+    launcher.innerHTML = '<span class="lh-chat-launcher-icon">💬</span>'
     document.body.appendChild(launcher)
 
     function loadWidgetCore() {
@@ -53,7 +53,7 @@
 
       const completeStyle = document.createElement('style')
       completeStyle.textContent = `
-        .chat-widget {
+        .lh-chat-widget {
             --primary-color: #4f46e5;
             --secondary-color: #4338ca;
             --light-color: #e0e7ff;
@@ -64,7 +64,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .chat-window {
+        .lh-chat-window {
             position: fixed;
             bottom: 90px;
             right: 20px;
@@ -80,11 +80,11 @@
             transition: all 0.3s ease;
         }
 
-        .chat-window.active {
+        .lh-chat-window.active {
             display: flex;
         }
 
-        .chat-header {
+        .lh-chat-header {
             background-color: var(--primary-color);
             color: white;
             padding: 15px;
@@ -93,13 +93,13 @@
             align-items: center;
         }
 
-        .chat-title {
+        .lh-chat-title {
             margin: 0;
             font-size: 18px;
             font-weight: 600;
         }
 
-        .chat-close {
+        .lh-chat-close {
             background: none;
             border: none;
             color: white;
@@ -108,7 +108,7 @@
             padding: 0;
         }
 
-        .registration-form {
+        .lh-registration-form {
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -116,38 +116,38 @@
             overflow-y: auto;
         }
 
-        .form-group {
+        .lh-form-group {
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
 
-        .form-label {
+        .lh-form-label {
             font-size: 14px;
             font-weight: 500;
             color: var(--text-color);
         }
 
-        .form-input {
+        .lh-form-input {
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 14px;
         }
 
-        .form-input:focus {
+        .lh-form-input:focus {
             outline: none;
             border-color: var(--primary-color);
         }
 
-        .error-message {
+        .lh-error-message {
             color: #ef4444;
             font-size: 12px;
             margin-top: 3px;
             display: none;
         }
 
-        .submit-button {
+        .lh-submit-button {
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -160,11 +160,11 @@
             transition: background-color 0.3s ease;
         }
 
-        .submit-button:hover {
+        .lh-submit-button:hover {
             background-color: var(--secondary-color);
         }
 
-        .chat-messages {
+        .lh-chat-messages {
             flex: 1;
             padding: 15px;
             overflow-y: auto;
@@ -174,7 +174,7 @@
             display: none;
         }
 
-        .message {
+        .lh-message {
             max-width: 80%;
             padding: 10px 15px;
             border-radius: 18px;
@@ -182,21 +182,21 @@
             word-wrap: break-word;
         }
 
-        .bot-message {
+        .lh-bot-message {
             align-self: flex-start;
             background-color: var(--light-color);
             color: var(--text-color);
             border-bottom-left-radius: 5px;
         }
 
-        .user-message {
+        .lh-user-message {
             align-self: flex-end;
             background-color: var(--primary-color);
             color: white;
             border-bottom-right-radius: 5px;
         }
 
-        .chat-input-container {
+        .lh-chat-input-container {
             padding: 15px;
             border-top: 1px solid var(--border-color);
             display: flex;
@@ -204,7 +204,7 @@
             display: none;
         }
 
-        .chat-input {
+        .lh-chat-input {
             flex: 1;
             padding: 10px 15px;
             border: 1px solid var(--border-color);
@@ -215,12 +215,12 @@
             overflow-y: auto;
         }
 
-        .chat-input:focus {
+        .lh-chat-input:focus {
             outline: none;
             border-color: var(--primary-color);
         }
 
-        .send-button {
+        .lh-send-button {
             width: 40px;
             height: 40px;
             background-color: var(--primary-color);
@@ -234,11 +234,11 @@
             transition: background-color 0.3s ease;
         }
 
-        .send-button:hover {
+        .lh-send-button:hover {
             background-color: var(--secondary-color);
         }
 
-        .typing-indicator {
+        .lh-typing-indicator {
             display: flex;
             align-items: center;
             gap: 5px;
@@ -250,7 +250,7 @@
             margin-bottom: 5px;
         }
 
-        .typing-dot {
+        .lh-typing-dot {
             width: 8px;
             height: 8px;
             background-color: #6b7280;
@@ -258,15 +258,15 @@
             animation: typing 1.4s infinite ease-in-out;
         }
 
-        .typing-dot:nth-child(1) {
+        .lh-typing-dot:nth-child(1) {
             animation-delay: 0s;
         }
 
-        .typing-dot:nth-child(2) {
+        .lh-typing-dot:nth-child(2) {
             animation-delay: 0.2s;
         }
 
-        .typing-dot:nth-child(3) {
+        .lh-typing-dot:nth-child(3) {
             animation-delay: 0.4s;
         }
 
@@ -279,7 +279,7 @@
             }
         }
 
-        .quick-reply-container {
+        .lh-quick-reply-container {
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -291,7 +291,7 @@
             align-items: flex-start; /* Align items to the start (left) */
         }
 
-        .quick-reply-button {
+        .lh-quick-reply-button {
             background-color: #e0e0e0;
             color: #333;
             border: none;
@@ -303,11 +303,11 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .quick-reply-button:hover {
+        .lh-quick-reply-button:hover {
             background-color: #d0d0d0;
         }
 
-        .quick-reply-button:active {
+        .lh-quick-reply-button:active {
             background-color: #c0c0c0;
             transform: translateY(1px);
         }
@@ -315,36 +315,36 @@
         document.head.appendChild(completeStyle)
 
         const html = `
-        <div class="chat-widget">
-            <div class="chat-window">
-                <div class="chat-header">
-                    <h3 class="chat-title">AI Support Assistant</h3>
-                    <button class="chat-close">&times;</button>
+        <div class="lh-chat-widget">
+            <div class="lh-chat-window">
+                <div class="lh-chat-header">
+                    <h3 class="lh-chat-title">AI Support Assistant</h3>
+                    <button class="lh-chat-close">&times;</button>
                 </div>
-                <div class="registration-form">
-                    <div class="form-group">
-                        <label class="form-label" for="name">Name</label>
-                        <input type="text" id="name" class="form-input" placeholder="Enter your name">
-                        <div class="error-message" id="name-error">Please enter your name</div>
+                <div class="lh-registration-form">
+                    <div class="lh-form-group">
+                        <label class="lh-form-label" for="name">Name</label>
+                        <input type="text" id="name" class="lh-form-input" placeholder="Enter your name">
+                        <div class="lh-error-message" id="name-error">Please enter your name</div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" for="email">Email</label>
-                        <input type="email" id="email" class="form-input" placeholder="Enter your email">
-                        <div class="error-message" id="email-error">Please enter a valid email</div>
+                    <div class="lh-form-group">
+                        <label class="lh-form-label" for="email">Email</label>
+                        <input type="email" id="email" class="lh-form-input" placeholder="Enter your email">
+                        <div class="lh-error-message" id="email-error">Please enter a valid email</div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" for="phone">Phone Number</label>
-                        <input type="tel" id="phone" class="form-input" placeholder="Enter your phone number">
-                        <div class="error-message" id="phone-error">Please enter a valid phone number</div>
+                    <div class="lh-form-group">
+                        <label class="lh-form-label" for="phone">Phone Number</label>
+                        <input type="tel" id="phone" class="lh-form-input" placeholder="Enter your phone number">
+                        <div class="lh-error-message" id="phone-error">Please enter a valid phone number</div>
                     </div>
                     <div class="g-recaptcha" data-sitekey=""></div>
-                    <div class="error-message" id="recaptcha-error">Please complete the reCAPTCHA</div>
-                    <button type="button" class="submit-button" id="submit-registration">Start Chat</button>
+                    <div class="lh-error-message" id="recaptcha-error">Please complete the reCAPTCHA</div>
+                    <button type="button" class="lh-submit-button" id="submit-registration">Start Chat</button>
                 </div>
-                <div class="chat-messages" style="display: none;"></div>
-                <div class="chat-input-container" style="display: none;">
-                    <textarea class="chat-input" placeholder="Type your message..."></textarea>
-                    <button class="send-button">
+                <div class="lh-chat-messages" style="display: none;"></div>
+                <div class="lh-chat-input-container" style="display: none;">
+                    <textarea class="lh-chat-input" placeholder="Type your message..."></textarea>
+                    <button class="lh-send-button">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -354,16 +354,16 @@
             </div>
         </div>
         `
-        const widgetContainer = document.createElement('div')
-        const shadowRoot = widgetContainer.attachShadow({ mode: 'open' })
+        const temp = document.createElement('template')
+        temp.innerHTML = html.trim()
+        const widgetContainer = temp.content.firstElementChild
         document.body.appendChild(widgetContainer)
-        shadowRoot.appendChild(temp.content)
 
         widgetContainer
             .querySelector('.g-recaptcha')
             .setAttribute('data-sitekey', config.recaptchaSiteKey)
         widgetContainer
-            .querySelector('.chat-title')
+            .querySelector('.lh-chat-title')
             .textContent = config.title
 
 
@@ -377,15 +377,15 @@
             let isWaitingForResponse = false;
             
             // Get DOM elements
-            const chatLauncher = document.getElementById('chat-launcher');
-            const chatWindow = widgetContainer.querySelector('.chat-window');
-            const closeButton = chatWindow.querySelector('.chat-close');
-            const registrationForm = chatWindow.querySelector('.registration-form');
-            const chatMessages = chatWindow.querySelector('.chat-messages');
-            const chatInputContainer = chatWindow.querySelector('.chat-input-container');
+            const chatLauncher = document.getElementById('lh-chat-launcher');
+            const chatWindow = widgetContainer.querySelector('.lh-chat-window');
+            const closeButton = chatWindow.querySelector('.lh-chat-close');
+            const registrationForm = chatWindow.querySelector('.lh-registration-form');
+            const chatMessages = chatWindow.querySelector('.lh-chat-messages');
+            const chatInputContainer = chatWindow.querySelector('.lh-chat-input-container');
             const submitButton = chatWindow.querySelector('#submit-registration');
-            const chatInput = chatWindow.querySelector('.chat-input');
-            const sendButton = chatWindow.querySelector('.send-button');
+            const chatInput = chatWindow.querySelector('.lh-chat-input');
+            const sendButton = chatWindow.querySelector('.lh-send-button');
     
             // When click on chatLuncher, sopen chat and make ping if first time
             chatLauncher.addEventListener('click', function() {
@@ -523,7 +523,7 @@
             function sendMessage(message) {
                 const messageText = message || chatInput.value.trim();
                 if (!messageText || isWaitingForResponse) return;
-                const quickReplyContainer = chatMessages.querySelector('.quick-reply-container');
+                const quickReplyContainer = chatMessages.querySelector('.lh-quick-reply-container');
                 if (quickReplyContainer) {
                     quickReplyContainer.remove();
                 }
@@ -533,11 +533,11 @@
                 addUserMessage(messageText);
                 // Show typing indicator
                 const typingIndicator = document.createElement('div');
-                typingIndicator.className = 'typing-indicator';
+                typingIndicator.className = 'lh-typing-indicator';
                 typingIndicator.innerHTML = `
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
+                    <div class="lh-typing-dot"></div>
+                    <div class="lh-typing-dot"></div>
+                    <div class="lh-typing-dot"></div>
                 `;
                 chatMessages.appendChild(typingIndicator);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -582,7 +582,7 @@
             
             function addUserMessage(text) {
                 const messageElement = document.createElement('div');
-                messageElement.className = 'message user-message';
+                messageElement.className = 'lh-message lh-user-message';
                 messageElement.textContent = text;
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -594,7 +594,7 @@
                 // Replace Markdown-style links with <a> tags
                 text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
                 const messageElement = document.createElement('div');
-                messageElement.className = 'message bot-message';
+                messageElement.className = 'lh-message lh-bot-message';
                 messageElement.innerHTML = text;
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -628,11 +628,11 @@
     
             function addQuickReplyButtons(options) {
                 const quickReplyContainer = document.createElement('div');
-                quickReplyContainer.className = 'quick-reply-container';
+                quickReplyContainer.className = 'lh-quick-reply-container';
     
                 options.forEach(option => {
                     const button = document.createElement('button');
-                    button.className = 'quick-reply-button';
+                    button.className = 'lh-quick-reply-button';
                     button.textContent = option;
                     button.addEventListener('click', () => {
                         sendMessage(option);
