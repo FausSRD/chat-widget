@@ -22,6 +22,30 @@
       }
       .lh-chat-launcher.unread::after { display: block; }
       .lh-chat-launcher:hover { transform: scale(1.05); }
+      #lh-chat-hint {
+        position: fixed;
+        bottom: 20px;
+        right: 90px; /* distancia desde el borde derecho, ajusta si tu botón es más grande */
+        max-width: 130px;
+        white-space: normal;
+        overflow-wrap: break-word;
+        text-align: center;
+        background-color:rgb(255, 255, 255);
+        color:rgb(0, 0, 0);
+        padding: 8px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1.3;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
     `
     document.head.appendChild(loaderCSS)
 
@@ -30,6 +54,11 @@
     launcher.className = 'lh-chat-launcher'
     launcher.innerHTML = '<span class="lh-chat-launcher-icon">💬</span>'
     document.body.appendChild(launcher)
+
+    const chatHint = document.createElement('div')
+    chatHint.id = 'lh-chat-hint'
+    chatHint.textContent = "Ask me anything I'm here to help"
+    document.body.appendChild(chatHint)
 
     function loadWidgetCore() {
       if (window.widgetCoreLoaded) return
