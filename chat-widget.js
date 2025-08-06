@@ -66,8 +66,8 @@
 
       const configSource = window.ChatWidgetConfig || {}
       const config = {
-        // webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
-        webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
+        webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
+        // webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
         title: configSource.title || 'DealerPRO Support Assistant',
         welcomeMessage: configSource.welcomeMessage || "Hi! I'm your virtual assistant. How can i help you?",
         recaptchaSiteKey: configSource.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf',
