@@ -66,8 +66,8 @@
 
       const configSource = window.ChatWidgetConfig || {}
       const config = {
-        webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
-        // webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
+        // webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
+        webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
         title: configSource.title || 'DealerPRO Support Assistant',
         welcomeMessage: configSource.welcomeMessage || "Hi! I'm your virtual assistant. How can i help you?",
         recaptchaSiteKey: configSource.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf',
@@ -404,6 +404,7 @@
             let sessionId = localStorage.getItem("sessionId") || null;
             let firstPing = false;
             let isWaitingForResponse = false;
+            let messages = JSON.parse(localStorage.getItem('lh-chat-messages') || '[]')
             
             // Get DOM elements
             const chatLauncher = document.getElementById('lh-chat-launcher');
@@ -610,14 +611,32 @@
             }
             
             function addUserMessage(text) {
+                printUserMessage(text)
+                messages.push({
+                    role: 'user',
+                    content: text
+                });
+                localStorage.setItem('lh-chat-messages', JSON.stringify(messages));
+            }
+            
+            function addBotMessage(text) {
+                printBotMessage(text)
+                messages.push({
+                    role: 'assistant',
+                    content: text
+                });
+                localStorage.setItem('lh-chat-messages', JSON.stringify(messages));
+            }
+
+            function printUserMessage(text) {
                 const messageElement = document.createElement('div');
                 messageElement.className = 'lh-message lh-user-message';
                 messageElement.textContent = text;
                 chatMessages.appendChild(messageElement);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-            
-            function addBotMessage(text) {
+
+            function printBotMessage(text) {
                 // Replace line break for <br>
                 text = text.replace(/\n/g, '<br>');
                 // Replace Markdown-style links with <a> tags
@@ -639,6 +658,8 @@
             }
     
             function reloadForm() {
+                messages = [];
+                localStorage.removeItem('lh-chat-messages');
                 localStorage.removeItem("sessionId")
                 isWaitingForResponse = false;
                 registrationForm.style.display = 'flex';
@@ -651,8 +672,19 @@
                 chatMessages.style.display = 'flex';
                 chatInputContainer.style.display = 'flex';
                 // Add welcome message
-                addBotMessage(config.welcomeMessage);
-                addQuickReplyButtons(config.quickReplies);
+                if(messages.length < 1) {
+                    addBotMessage(config.welcomeMessage);
+                    addQuickReplyButtons(config.quickReplies);
+                } else {
+                    messages.forEach((message, index) => {
+                        if (message.role === 'user' && index != messages.length - 1) { // Print everyone except last
+                            printUserMessage(message.content);
+                        } else if (message.role === 'assistant') {
+                            printBotMessage(message.content);
+                        }
+                    });
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
             }
     
             function addQuickReplyButtons(options) {
