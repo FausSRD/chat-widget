@@ -1,14 +1,29 @@
 (function() {
+    const configSource = window.ChatWidgetConfig || {}
+    const config = {
+        // webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
+        webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
+        title: configSource.title || 'DealerPRO Support Assistant',
+        welcomeMessage: configSource.welcomeMessage || "Hi! I'm your virtual assistant. How can i help you?",
+        recaptchaSiteKey: configSource.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf',
+        quickReplies: configSource.quickReplies || ['Browse Newest Inventory','Apply for Financing','Schedule a Test Ride'],
+        primaryColor: configSource.primaryColor || "#4f46e5",
+        secondaryColor: configSource.secondaryColor || "#4338ca",
+        buttonIconColor : configSource.buttonIconColor || '#4f46e5',
+        fontFamily : configSource.fontFamily || "Arial",
+        hintPosition : configSource.hintPosition === 'top' ? 'bottom: 90px; right: 20px;' : 'bottom: 20px; right: 90px;',
+    }
+
   function onReady(fn) {
     if (document.readyState !== 'loading') fn()
     else document.addEventListener('DOMContentLoaded', fn)
   }
-
+  console.log('Font family:', config.fontFamily);
   onReady(() => {
     const loaderCSS = document.createElement('style')
     loaderCSS.textContent = `
       .lh-chat-launcher { position: fixed; bottom: 20px; right: 20px;
-        width: 60px; height: 60px; background-color: #4f46e5;
+        width: 60px; height: 60px; background-color: ${config.buttonIconColor};
         border-radius: 50%; display: flex; align-items: center;
         justify-content: center; cursor: pointer;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -24,8 +39,7 @@
       .lh-chat-launcher:hover { transform: scale(1.05); }
       #lh-chat-hint {
         position: fixed;
-        bottom: 20px;
-        right: 90px; /* distancia desde el borde derecho, ajusta si tu botón es más grande */
+        ${config.hintPosition}
         max-width: 130px;
         white-space: normal;
         overflow-wrap: break-word;
@@ -34,12 +48,32 @@
         color:rgb(0, 0, 0);
         padding: 8px 12px;
         border-radius: 12px;
+        font-family: ${config.fontFamily};
         font-size: 14px;
         font-weight: bold;
         line-height: 1.3;
         box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         z-index: 9999;
         animation: bounce 1.5s infinite;
+    }
+
+    .lh-chat-hint-close {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        font-size: 14px;
+        font-weight: normal;
+        color: #666;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 10000;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .lh-chat-hint-close:hover {
+        color: #000;
     }
 
     @keyframes bounce {
@@ -57,22 +91,18 @@
 
     const chatHint = document.createElement('div')
     chatHint.id = 'lh-chat-hint'
-    chatHint.textContent = "Ask me anything I'm here to help"
+    chatHint.innerHTML = `
+        <span class="lh-chat-hint-close">&times;</span>
+        <span class="lh-chat-hint-text">Ask me anything I'm here to help</span>
+    `
     document.body.appendChild(chatHint)
+    chatHint.querySelector('.lh-chat-hint-close').addEventListener('click', () => {
+        chatHint.style.display = 'none';
+      });
 
     function loadWidgetCore() {
       if (window.widgetCoreLoaded) return
       window.widgetCoreLoaded = true
-
-      const configSource = window.ChatWidgetConfig || {}
-      const config = {
-        webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
-        // webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
-        title: configSource.title || 'DealerPRO Support Assistant',
-        welcomeMessage: configSource.welcomeMessage || "Hi! I'm your virtual assistant. How can i help you?",
-        recaptchaSiteKey: configSource.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf',
-        quickReplies: configSource.quickReplies || ['Browse Newest Inventory','Apply for Financing','Schedule a Test Ride'],
-      }
 
       const recaptchaScript = document.createElement('script')
       recaptchaScript.src   = 'https://www.google.com/recaptcha/api.js'
@@ -83,14 +113,19 @@
       const completeStyle = document.createElement('style')
       completeStyle.textContent = `
         .lh-chat-widget {
-            --primary-color: #4f46e5;
-            --secondary-color: #4338ca;
+            --primary-color: ${config.primaryColor};
+            --secondary-color: ${config.secondaryColor};
             --light-color: #e0e7ff;
             --text-color: #1f2937;
             --border-color: #e5e7eb;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --radius: 12px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-family: ${config.fontFamily};
+            font-family: var(--font-family);
+        }
+
+        .lh-chat-widget * {
+            font-family: var(--font-family);
         }
 
         .lh-chat-window {
