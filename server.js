@@ -19,7 +19,7 @@ app.get('/chat-widget.js', (req, res) => {
   }
 });
 
-app.get('/internat-widget-company.js', (req, res) => {
+app.get('/internal-widget-company.js', (req, res) => {
   const acceptEncoding = req.headers['accept-encoding'] || '';
   const basePath = path.join(__dirname, 'internat-widget-company.js');
 
