@@ -21,7 +21,7 @@ app.get('/chat-widget.js', (req, res) => {
 
 app.get('/internal-widget-company.js', (req, res) => {
   const acceptEncoding = req.headers['accept-encoding'] || '';
-  const basePath = path.join(__dirname, 'internat-widget-company.js');
+  const basePath = path.join(__dirname, 'internal-widget-company.js');
 
   if (acceptEncoding.includes('gzip') && fs.existsSync(basePath + '.gz')) {
     res.setHeader('Content-Encoding', 'gzip');
