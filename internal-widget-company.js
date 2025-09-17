@@ -601,14 +601,14 @@
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
     
-            function makePing() {
+            function getAuthToken() {
                 const headers = {};
                 if (sessionId) {
                     headers["lh-session-id"] = sessionId;
                 }
                 headers["lh-api-key"] = config.apiKey;
-                fetch(config.webhookUrl + '/login/still-alive', {        
-                    method: 'GET',
+                fetch(config.webhookUrl + '/login', {        
+                    method: 'POST',
                     headers: headers
                 })
                 .then(response => {
@@ -633,6 +633,32 @@
                 .catch(error => {
                     console.log("Can't load chat.");
                 });
+            }
+
+            function makePing() {
+                const headers = {};
+                if (sessionId) {
+                    headers["lh-session-id"] = sessionId;
+                }
+                headers["lh-api-key"] = config.apiKey;
+                fetch(config.webhookUrl + '/login/ping', {        
+                    method: 'GET',
+                    headers: headers
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            messages = [];
+                            localStorage.removeItem('lh-chat-messages');
+                            sessionId = null;
+                            localStorage.removeItem("sessionId");
+                            getAuthToken();
+                        } else {
+                            reloadChat();
+                        }
+                    })
+                    .catch(error => {
+                        reloadForm();
+                    });
             }
 
             function sendAudioToBackend(blob) {
