@@ -6,12 +6,22 @@
         title: configSource.title || 'Internal Support Assistant',
         welcomeMessage: configSource.welcomeMessage || "Hi! I'm your virtual assistant. How can i help you?",
         quickReplies: configSource.quickReplies || ['Option 1','Option 2'],
-        primaryColor: configSource.primaryColor || "#4f46e5",
-        secondaryColor: configSource.secondaryColor || "#4338ca",
-        buttonIconColor : configSource.buttonIconColor || '#4f46e5',
         fontFamily : configSource.fontFamily || "Arial",
         hintPosition : configSource.hintPosition === 'top' ? 'bottom: 90px; right: 20px;' : 'bottom: 20px; right: 90px;',
+        hintMessage : configSource.hintMessage || 'Ask me anything I\'m here to help',
         apiKey : configSource.apiKey || '123',
+        chatBackgroundColor : configSource.chatBackgroundColor || 'white',
+        inputBorder : configSource.inputBorder || '#e5e7eb',
+        inputBorderHover : configSource.inputBorderHover || "#4f46e5",
+        headerColor : configSource.headerColor || '#4f46e5',
+        messageColor : configSource.messageColor || '#4f46e5',
+        messageTextColor : configSource.messageTextColor || 'white',
+        botMessageColor : configSource.botMessageColor || '#e0e7ff',
+        botMessageTextColor : configSource.botMessageTextColor || '#1f2937',
+        sendButtonColor : configSource.sendButtonColor || '#4f46e5',
+        sendButtonIconColor : configSource.sendButtonIconColor || 'white',
+        sendButtonHooverColor: configSource.sendButtonHooverColor || "#4338ca",
+        buttonIconColor : configSource.buttonIconColor || '#4f46e5',
     }
 
   function onReady(fn) {
@@ -93,7 +103,7 @@
     chatHint.id = 'lh-chat-hint'
     chatHint.innerHTML = `
         <span class="lh-chat-hint-close">&times;</span>
-        <span class="lh-chat-hint-text">Ask me anything I'm here to help</span>
+        <span class="lh-chat-hint-text">${config.hintMessage}</span>
     `
     document.body.appendChild(chatHint)
     chatHint.querySelector('.lh-chat-hint-close').addEventListener('click', () => {
@@ -107,11 +117,9 @@
       const completeStyle = document.createElement('style')
       completeStyle.textContent = `
         .lh-chat-widget {
-            --primary-color: ${config.primaryColor};
-            --secondary-color: ${config.secondaryColor};
             --light-color: #e0e7ff;
             --text-color: #1f2937;
-            --border-color: #e5e7eb;
+            --border-color: ${config.inputBorder};
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --radius: 12px;
             --font-family: ${config.fontFamily};
@@ -128,7 +136,7 @@
             right: 20px;
             width: 350px;
             height: 500px;
-            background-color: white;
+            background-color: ${config.chatBackgroundColor};
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             display: none;
@@ -143,7 +151,7 @@
         }
 
         .lh-chat-header {
-            background-color: var(--primary-color);
+            background-color: ${config.headerColor};
             color: white;
             padding: 15px;
             display: flex;
@@ -186,15 +194,15 @@
 
         .lh-bot-message {
             align-self: flex-start;
-            background-color: var(--light-color);
-            color: var(--text-color);
+            background-color: ${config.botMessageColor};
+            color: ${config.botMessageTextColor};
             border-bottom-left-radius: 5px;
         }
 
         .lh-user-message {
             align-self: flex-end;
-            background-color: var(--primary-color);
-            color: white;
+            background-color: ${config.messageColor};
+            color: ${config.messageTextColor};
             border-bottom-right-radius: 5px;
         }
 
@@ -209,7 +217,8 @@
         .lh-chat-input {
             flex: 1;
             padding: 10px 15px;
-            border: 1px solid var(--border-color);
+            border: 1px solid ${config.inputBorder};
+            background-color: ${config.chatBackgroundColor};
             border-radius: 20px;
             font-size: 14px;
             resize: none;
@@ -219,14 +228,14 @@
 
         .lh-chat-input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: ${config.inputBorderHover};
         }
 
         .lh-send-button {
             width: 40px;
             height: 40px;
-            background-color: var(--primary-color);
-            color: white;
+            background-color: ${config.sendButtonColor};
+            color: ${config.sendButtonIconColor};
             border: none;
             border-radius: 50%;
             display: flex;
@@ -237,7 +246,25 @@
         }
 
         .lh-send-button:hover {
-            background-color: var(--secondary-color);
+            background-color: ${config.sendButtonHooverColor};
+        }
+
+        .lh-record-button {
+            width: 40px;
+            height: 40px;
+            background-color: ${config.sendButtonColor};
+            color: ${config.sendButtonIconColor};
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .lh-record-button:hover {
+            background-color:  ${config.sendButtonHooverColor};
         }
 
         .lh-typing-indicator {
@@ -245,7 +272,7 @@
             align-items: center;
             gap: 5px;
             padding: 10px 15px;
-            background-color: var(--light-color);
+            background-color: ${config.botMessageColor};
             border-radius: 18px;
             border-bottom-left-radius: 5px;
             align-self: flex-start;
@@ -255,7 +282,7 @@
         .lh-typing-dot {
             width: 8px;
             height: 8px;
-            background-color: #6b7280;
+            background-color: ${config.botMessageTextColor};
             border-radius: 50%;
             animation: typing 1.4s infinite ease-in-out;
         }
@@ -326,6 +353,16 @@
                 <div class="lh-chat-messages" style="display: none;"></div>
                 <div class="lh-chat-input-container" style="display: none;">
                     <textarea class="lh-chat-input" placeholder="Type your message..."></textarea>
+                    <button class="lh-record-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
+                            <path d="M12 1v11"></path>
+                            <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
+                            <line x1="19" y1="10" x2="19" y2="10"></line>
+                            <line x1="5" y1="10" x2="5" y2="10"></line>
+                            <path d="M12 15v4"></path>
+                            <path d="M8 19h8"></path>
+                        </svg>
+                    </button>
                     <button class="lh-send-button">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -355,7 +392,9 @@
             let firstPing = false;
             let isWaitingForResponse = false;
             let messages = JSON.parse(localStorage.getItem('lh-chat-messages') || '[]')
-            
+            let recorder;
+            let audioChunks = [];
+
             // Get DOM elements
             const chatLauncher = document.getElementById('lh-chat-launcher');
             const chatWindow = widgetContainer.querySelector('.lh-chat-window');
@@ -364,6 +403,8 @@
             const chatInputContainer = chatWindow.querySelector('.lh-chat-input-container');
             const chatInput = chatWindow.querySelector('.lh-chat-input');
             const sendButton = chatWindow.querySelector('.lh-send-button');
+            const recordButton = chatWindow.querySelector('.lh-record-button');
+
             chatMessages.style.display = 'none';
             chatInputContainer.style.display = 'none';
             // When click on chatLuncher, sopen chat and make ping if first time
@@ -393,6 +434,25 @@
             sendButton.addEventListener('click', function(event) {
                 event.preventDefault();
                 sendMessage();
+            });
+
+            recordButton.addEventListener('click', async () => {
+                if (!recorder || recorder.state === 'inactive') {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    recorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    recorder.ondataavailable = e => audioChunks.push(e.data);
+                    recorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        sendAudioToBackend(audioBlob);
+                        stopRecording();
+                    };
+            
+                    recorder.start();
+                    recordButton.textContent = '⏹️';
+                } else {
+                    stopRecording();
+                }
             });
 
             function sendMessage(message) {
@@ -505,7 +565,6 @@
 
     
             function reloadChat() {
-                console.log("Hola 1")
                 chatMessages.style.display = 'flex';
                 chatInputContainer.style.display = 'flex';
                 // Add welcome message
@@ -520,7 +579,6 @@
                             printBotMessage(message.content);
                         }
                     });
-                    console.log("Hola 2")
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
             }
@@ -577,6 +635,87 @@
                 });
             }
 
+            function sendAudioToBackend(blob) {
+                // Clear input
+                chatInput.value = '';
+                // Add user message to chat
+                addUserMessage('Audio sent');
+                // Show typing indicator
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'lh-typing-indicator';
+                typingIndicator.innerHTML = `
+                    <div class="lh-typing-dot"></div>
+                    <div class="lh-typing-dot"></div>
+                    <div class="lh-typing-dot"></div>
+                `;
+                chatMessages.appendChild(typingIndicator);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                isWaitingForResponse = true;
+                const reader = new FileReader();
+
+
+                reader.onloadend = () => {
+                    const base64Audio = reader.result.split(',')[1]; // quita el encabezado "data:audio/webm;base64,..."
+                    fetch(config.webhookUrl + "/voice", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'lh-session-id': sessionId,
+                            'lh-api-key': config.apiKey
+                        },
+                        body: JSON.stringify({
+                            audio: base64Audio,
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errorBody => {
+                                throw new Error(manageExceptions(errorBody));
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        chatMessages.removeChild(typingIndicator);
+                        addBotMessage(data.output || 'Sorry, I didn\'t understand that.');
+                    })
+                    .catch(error => {
+                        console.error('Message error:', error);
+                        chatMessages.removeChild(typingIndicator);
+                        addBotMessage(error.message || 'Sorry, there was an error processing your message. Please try again.');
+                        stopRecording();
+                    })
+                    .finally(() => {
+                        isWaitingForResponse = false;
+                        stopRecording();
+                    });
+                };
+            
+                reader.readAsDataURL(blob);
+            }
+
+            function stopRecording() {
+                if (recorder && recorder.state === 'recording') {
+                    recorder.stop();
+                }
+                if (recorder && recorder.stream) {
+                    recorder.stream.getTracks().forEach(track => track.stop());
+                }
+                recordButton.innerHTML = micIconSVG;
+            }
+
+            const micIconSVG = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
+                <path d="M12 1v11"></path>
+                <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
+                <line x1="19" y1="10" x2="19" y2="10"></line>
+                <line x1="5" y1="10" x2="5" y2="10"></line>
+                <path d="M12 15v4"></path>
+                <path d="M8 19h8"></path>
+            </svg>
+            `;
+            
+
             function manageExceptions(error) {
                 let errorCode = error.code;
                 switch (errorCode) {
@@ -586,6 +725,9 @@
                     default: return 'Sorry, there was an error processing your message. Please try again.';
                 }
             }
+
+
+
         }
         setTimeout(() => launcher.click(), 0)
     }
