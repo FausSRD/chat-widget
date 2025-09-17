@@ -701,19 +701,18 @@
                 if (recorder && recorder.stream) {
                     recorder.stream.getTracks().forEach(track => track.stop());
                 }
+                const micIconSVG = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
+                    <path d="M12 1v11"></path>
+                    <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
+                    <line x1="19" y1="10" x2="19" y2="10"></line>
+                    <line x1="5" y1="10" x2="5" y2="10"></line>
+                    <path d="M12 15v4"></path>
+                    <path d="M8 19h8"></path>
+                </svg>
+                `;
                 recordButton.innerHTML = micIconSVG;
             }
-
-            const micIconSVG = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
-                <path d="M12 1v11"></path>
-                <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
-                <line x1="19" y1="10" x2="19" y2="10"></line>
-                <line x1="5" y1="10" x2="5" y2="10"></line>
-                <path d="M12 15v4"></path>
-                <path d="M8 19h8"></path>
-            </svg>
-            `;
             
 
             function manageExceptions(error) {
