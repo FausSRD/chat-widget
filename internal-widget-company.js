@@ -22,6 +22,7 @@
         sendButtonIconColor : configSource.sendButtonIconColor || 'white',
         sendButtonHooverColor: configSource.sendButtonHooverColor || "#4338ca",
         buttonIconColor : configSource.buttonIconColor || '#4f46e5',
+        activateMic: configSource.activateMic || 'false'
     }
 
   function onReady(fn) {
@@ -262,6 +263,7 @@
             justify-content: center;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            display: ${config.activateMic == "true" ? 'flex' : 'none'};
         }
 
         .lh-record-button:hover {
