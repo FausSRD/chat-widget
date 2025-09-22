@@ -33,6 +33,20 @@ app.get('/internal-widget-company.js', (req, res) => {
   }
 });
 
+app.get('/internal-widget-company-wix.js', (req, res) => {
+  const acceptEncoding = req.headers['accept-encoding'] || '';
+  const basePath = path.join(__dirname, 'internal-widget-company-wix.js');
+
+  if (acceptEncoding.includes('gzip') && fs.existsSync(basePath + '.gz')) {
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Content-Type', 'application/javascript');
+    fs.createReadStream(basePath + '.gz').pipe(res);
+  } else {
+    res.setHeader('Content-Type', 'application/javascript');
+    fs.createReadStream(basePath).pipe(res);
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
