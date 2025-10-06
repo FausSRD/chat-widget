@@ -1,38 +1,38 @@
-(function() {
+(function () {
     const configSource = window.ChatWidgetConfig || {}
     const config = {
         webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/internal-widget-company/chat',
         // webhookUrl: 'http://localhost:8080/app-backend-api/v1/internal-widget-company/chat',
         title: configSource.title || 'Internal Support Assistant',
         welcomeMessage: configSource.welcomeMessage || "Hi! I'm your virtual assistant. How can i help you?",
-        quickReplies: configSource.quickReplies || ['Option 1','Option 2'],
-        fontFamily : configSource.fontFamily || "Arial",
-        hintPosition : configSource.hintPosition === 'top' ? 'bottom: 90px; right: 20px;' : 'bottom: 20px; right: 90px;',
-        hintMessage : configSource.hintMessage || 'Ask me anything I\'m here to help',
-        apiKey : configSource.apiKey || '123',
-        chatBackgroundColor : configSource.chatBackgroundColor || 'white',
-        inputBorder : configSource.inputBorder || '#e5e7eb',
-        inputBorderHover : configSource.inputBorderHover || "#4f46e5",
-        headerColor : configSource.headerColor || '#4f46e5',
-        messageColor : configSource.messageColor || '#4f46e5',
-        messageTextColor : configSource.messageTextColor || 'white',
-        botMessageColor : configSource.botMessageColor || '#e0e7ff',
-        botMessageTextColor : configSource.botMessageTextColor || '#1f2937',
-        sendButtonColor : configSource.sendButtonColor || '#4f46e5',
-        sendButtonIconColor : configSource.sendButtonIconColor || 'white',
+        quickReplies: configSource.quickReplies || ['Option 1', 'Option 2'],
+        fontFamily: configSource.fontFamily || "Arial",
+        hintPosition: configSource.hintPosition === 'top' ? 'bottom: 90px; right: 20px;' : 'bottom: 20px; right: 90px;',
+        hintMessage: configSource.hintMessage || 'Ask me anything I\'m here to help',
+        apiKey: configSource.apiKey || '123',
+        chatBackgroundColor: configSource.chatBackgroundColor || 'white',
+        inputBorder: configSource.inputBorder || '#e5e7eb',
+        inputBorderHover: configSource.inputBorderHover || "#4f46e5",
+        headerColor: configSource.headerColor || '#4f46e5',
+        messageColor: configSource.messageColor || '#4f46e5',
+        messageTextColor: configSource.messageTextColor || 'white',
+        botMessageColor: configSource.botMessageColor || '#e0e7ff',
+        botMessageTextColor: configSource.botMessageTextColor || '#1f2937',
+        sendButtonColor: configSource.sendButtonColor || '#4f46e5',
+        sendButtonIconColor: configSource.sendButtonIconColor || 'white',
         sendButtonHooverColor: configSource.sendButtonHooverColor || "#4338ca",
-        buttonIconColor : configSource.buttonIconColor || '#4f46e5',
+        buttonIconColor: configSource.buttonIconColor || '#4f46e5',
         activateMic: configSource.activateMic || 'false'
     }
 
-  function onReady(fn) {
-    if (document.readyState !== 'loading') fn()
-    else document.addEventListener('DOMContentLoaded', fn)
-  }
-  console.log('Font family:', config.fontFamily);
-  onReady(() => {
-    const loaderCSS = document.createElement('style')
-    loaderCSS.textContent = `
+    function onReady(fn) {
+        if (document.readyState !== 'loading') fn()
+        else document.addEventListener('DOMContentLoaded', fn)
+    }
+
+    onReady(() => {
+        const loaderCSS = document.createElement('style')
+        loaderCSS.textContent = `
       .lh-chat-launcher { position: fixed; bottom: 20px; right: 20px;
         width: 60px; height: 60px; background-color: ${config.buttonIconColor};
         border-radius: 50%; display: flex; align-items: center;
@@ -92,31 +92,31 @@
         50% { transform: translateY(-5px); }
     }
     `
-    document.head.appendChild(loaderCSS)
+        document.head.appendChild(loaderCSS)
 
-    const launcher = document.createElement('div')
-    launcher.id = 'lh-chat-launcher'
-    launcher.className = 'lh-chat-launcher'
-    launcher.innerHTML = '<span class="lh-chat-launcher-icon">💬</span>'
-    document.body.appendChild(launcher)
+        const launcher = document.createElement('div')
+        launcher.id = 'lh-chat-launcher'
+        launcher.className = 'lh-chat-launcher'
+        launcher.innerHTML = '<span class="lh-chat-launcher-icon">💬</span>'
+        document.body.appendChild(launcher)
 
-    const chatHint = document.createElement('div')
-    chatHint.id = 'lh-chat-hint'
-    chatHint.innerHTML = `
+        const chatHint = document.createElement('div')
+        chatHint.id = 'lh-chat-hint'
+        chatHint.innerHTML = `
         <span class="lh-chat-hint-close">&times;</span>
         <span class="lh-chat-hint-text">${config.hintMessage}</span>
     `
-    document.body.appendChild(chatHint)
-    chatHint.querySelector('.lh-chat-hint-close').addEventListener('click', () => {
-        chatHint.style.display = 'none';
-      });
+        document.body.appendChild(chatHint)
+        chatHint.querySelector('.lh-chat-hint-close').addEventListener('click', () => {
+            chatHint.style.display = 'none';
+        });
 
-    function loadWidgetCore() {
-      if (window.widgetCoreLoaded) return
-      window.widgetCoreLoaded = true
+        function loadWidgetCore() {
+            if (window.widgetCoreLoaded) return
+            window.widgetCoreLoaded = true
 
-      const completeStyle = document.createElement('style')
-      completeStyle.textContent = `
+            const completeStyle = document.createElement('style')
+            completeStyle.textContent = `
         .lh-chat-widget {
             --light-color: #e0e7ff;
             --text-color: #1f2937;
@@ -344,9 +344,9 @@
             transform: translateY(1px);
         }
         `
-        document.head.appendChild(completeStyle)
+            document.head.appendChild(completeStyle)
 
-        const html = `
+            const html = `
         <div class="lh-chat-widget">
             <div class="lh-chat-window">
                 <div class="lh-chat-header">
@@ -376,316 +376,112 @@
             </div>
         </div>
         `
-        const temp = document.createElement('template')
-        temp.innerHTML = html.trim()
-        const widgetContainer = temp.content.firstElementChild
-        document.body.appendChild(widgetContainer)
+            const temp = document.createElement('template')
+            temp.innerHTML = html.trim()
+            const widgetContainer = temp.content.firstElementChild
+            document.body.appendChild(widgetContainer)
 
-        widgetContainer
-            .querySelector('.lh-chat-title')
-            .textContent = config.title
+            widgetContainer
+                .querySelector('.lh-chat-title')
+                .textContent = config.title
 
 
-        initializeChat(widgetContainer, config)
+            initializeChat(widgetContainer, config)
 
-        function initializeChat(widgetContainer, config) {
+            function initializeChat(widgetContainer, config) {
 
-            // State variables
-            let sessionId = localStorage.getItem("sessionId") || null;
-            let firstPing = false;
-            let isWaitingForResponse = false;
-            let messages = JSON.parse(localStorage.getItem('lh-chat-messages') || '[]')
-            let recorder;
-            let audioChunks = [];
+                // State variables
+                let sessionId = localStorage.getItem("sessionId") || null;
+                let firstPing = false;
+                let isWaitingForResponse = false;
+                let messages = JSON.parse(localStorage.getItem('lh-chat-messages') || '[]')
+                let recorder;
+                let audioChunks = [];
 
-            // Get DOM elements
-            const chatLauncher = document.getElementById('lh-chat-launcher');
-            const chatWindow = widgetContainer.querySelector('.lh-chat-window');
-            const closeButton = chatWindow.querySelector('.lh-chat-close');
-            const chatMessages = chatWindow.querySelector('.lh-chat-messages');
-            const chatInputContainer = chatWindow.querySelector('.lh-chat-input-container');
-            const chatInput = chatWindow.querySelector('.lh-chat-input');
-            const sendButton = chatWindow.querySelector('.lh-send-button');
-            const recordButton = chatWindow.querySelector('.lh-record-button');
+                // Get DOM elements
+                const chatLauncher = document.getElementById('lh-chat-launcher');
+                const chatWindow = widgetContainer.querySelector('.lh-chat-window');
+                const closeButton = chatWindow.querySelector('.lh-chat-close');
+                const chatMessages = chatWindow.querySelector('.lh-chat-messages');
+                const chatInputContainer = chatWindow.querySelector('.lh-chat-input-container');
+                const chatInput = chatWindow.querySelector('.lh-chat-input');
+                const sendButton = chatWindow.querySelector('.lh-send-button');
+                const recordButton = chatWindow.querySelector('.lh-record-button');
 
-            chatMessages.style.display = 'none';
-            chatInputContainer.style.display = 'none';
-            // When click on chatLuncher, sopen chat and make ping if first time
-            chatLauncher.addEventListener('click', function() {
-                chatWindow.classList.add('active');
-                chatLauncher.classList.remove('unread');
-                if (!firstPing) {
-                    makePing();
-                    firstPing = true;
-                }
-            });
-    
-            // When click closeButton, close chat
-            closeButton.addEventListener('click', function() {
-                chatWindow.classList.remove('active');
-            });
-            
-            // When press Enter, send message
-            chatInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
+                chatMessages.style.display = 'none';
+                chatInputContainer.style.display = 'none';
+                // When click on chatLuncher, sopen chat and make ping if first time
+                chatLauncher.addEventListener('click', function () {
+                    chatWindow.classList.add('active');
+                    chatLauncher.classList.remove('unread');
+                    if (!firstPing) {
+                        makePing();
+                        firstPing = true;
+                    }
+                });
+
+                // When click closeButton, close chat
+                closeButton.addEventListener('click', function () {
+                    chatWindow.classList.remove('active');
+                });
+
+                // When press Enter, send message
+                chatInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+
+                // When click sendButton, send message
+                sendButton.addEventListener('click', function (event) {
+                    event.preventDefault();
                     sendMessage();
-                }
-            });
-            
-            // When click sendButton, send message
-            sendButton.addEventListener('click', function(event) {
-                event.preventDefault();
-                sendMessage();
-            });
+                });
 
-            recordButton.addEventListener('click', async () => {
-                if (!recorder || recorder.state === 'inactive') {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    recorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    recorder.ondataavailable = e => audioChunks.push(e.data);
-                    recorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        sendAudioToBackend(audioBlob);
+                recordButton.addEventListener('click', async () => {
+                    if (!recorder || recorder.state === 'inactive') {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        recorder = new MediaRecorder(stream);
+                        audioChunks = [];
+                        recorder.ondataavailable = e => audioChunks.push(e.data);
+                        recorder.onstop = () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                            sendAudioToBackend(audioBlob);
+                            stopRecording();
+                        };
+
+                        recorder.start();
+                        recordButton.textContent = '⏹️';
+                    } else {
                         stopRecording();
-                    };
-            
-                    recorder.start();
-                    recordButton.textContent = '⏹️';
-                } else {
-                    stopRecording();
-                }
-            });
+                    }
+                });
 
-            function sendMessage(message) {
-                const messageText = message || chatInput.value.trim();
-                if (!messageText || isWaitingForResponse) return;
-                const quickReplyContainer = chatMessages.querySelector('.lh-quick-reply-container');
-                if (quickReplyContainer) {
-                    quickReplyContainer.remove();
-                }
-                // Clear input
-                chatInput.value = '';
-                // Add user message to chat
-                addUserMessage(messageText);
-                // Show typing indicator
-                const typingIndicator = document.createElement('div');
-                typingIndicator.className = 'lh-typing-indicator';
-                typingIndicator.innerHTML = `
+                function sendMessage(message) {
+                    const messageText = message || chatInput.value.trim();
+                    if (!messageText || isWaitingForResponse) return;
+                    const quickReplyContainer = chatMessages.querySelector('.lh-quick-reply-container');
+                    if (quickReplyContainer) {
+                        quickReplyContainer.remove();
+                    }
+                    // Clear input
+                    chatInput.value = '';
+                    // Add user message to chat
+                    addUserMessage(messageText);
+                    // Show typing indicator
+                    const typingIndicator = document.createElement('div');
+                    typingIndicator.className = 'lh-typing-indicator';
+                    typingIndicator.innerHTML = `
                     <div class="lh-typing-dot"></div>
                     <div class="lh-typing-dot"></div>
                     <div class="lh-typing-dot"></div>
                 `;
-                chatMessages.appendChild(typingIndicator);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                isWaitingForResponse = true;
-                // Send message to webhook
-                fetch(config.webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'lh-session-id': sessionId,
-                        'lh-api-key': config.apiKey
-                    },
-                    body: JSON.stringify({
-                        message: messageText,
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorBody => {
-                            throw new Error(manageExceptions(errorBody));
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Remove typing indicator
-                    chatMessages.removeChild(typingIndicator);
-                    
-                    // Add bot response
-                    addBotMessage(data.output || 'Sorry, I didn\'t understand that.');
-                })
-                .catch(error => {
-                    console.error('Message error:', error);
-                    // Remove typing indicator
-                    chatMessages.removeChild(typingIndicator);
-                    // Add error message
-                    addBotMessage(error.message || 'Sorry, there was an error processing your message. Please try again.');
-                })
-                .finally(() => {
-                    isWaitingForResponse = false;
-                });
-            }
-            
-            function addUserMessage(text) {
-                printUserMessage(text)
-                messages.push({
-                    role: 'user',
-                    content: text
-                });
-                localStorage.setItem('lh-chat-messages', JSON.stringify(messages));
-            }
-            
-            function addBotMessage(text) {
-                printBotMessage(text)
-                messages.push({
-                    role: 'assistant',
-                    content: text
-                });
-                localStorage.setItem('lh-chat-messages', JSON.stringify(messages));
-            }
-
-            function printUserMessage(text) {
-                const messageElement = document.createElement('div');
-                messageElement.className = 'lh-message lh-user-message';
-                messageElement.textContent = text;
-                chatMessages.appendChild(messageElement);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-
-            function printBotMessage(text) {
-                // Replace line break for <br>
-                text = text.replace(/\n/g, '<br>');
-                // Replace Markdown-style links with <a> tags
-                text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-                const messageElement = document.createElement('div');
-                messageElement.className = 'lh-message lh-bot-message';
-                messageElement.innerHTML = text;
-                chatMessages.appendChild(messageElement);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-                if (!chatWindow.classList.contains('active')) {
-                    chatLauncher.classList.add('unread');
-                }
-            }
-            
-            function isValidEmail(email) {
-                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return re.test(email);
-            }
-
-    
-            function reloadChat() {
-                chatMessages.style.display = 'flex';
-                chatInputContainer.style.display = 'flex';
-                // Add welcome message
-                if(messages.length < 1) {
-                    addBotMessage(config.welcomeMessage);
-                    addQuickReplyButtons(config.quickReplies);
-                } else {
-                    messages.forEach((message, index) => {
-                        if (message.role === 'user' && index != messages.length - 1) { // Print everyone except last
-                            printUserMessage(message.content);
-                        } else if (message.role === 'assistant') {
-                            printBotMessage(message.content);
-                        }
-                    });
+                    chatMessages.appendChild(typingIndicator);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-            }
-    
-            function addQuickReplyButtons(options) {
-                const quickReplyContainer = document.createElement('div');
-                quickReplyContainer.className = 'lh-quick-reply-container';
-    
-                options.forEach(option => {
-                    const button = document.createElement('button');
-                    button.className = 'lh-quick-reply-button';
-                    button.textContent = option;
-                    button.addEventListener('click', () => {
-                        sendMessage(option);
-                        quickReplyContainer.remove(); // Remove buttons after one is clicked
-                    });
-                    quickReplyContainer.appendChild(button);
-                });
-                chatMessages.appendChild(quickReplyContainer);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-    
-            function getAuthToken() {
-                const headers = {};
-                if (sessionId) {
-                    headers["lh-session-id"] = sessionId;
-                }
-                headers["lh-api-key"] = config.apiKey;
-                fetch(config.webhookUrl + '/login', {        
-                    method: 'POST',
-                    headers: headers
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorBody => {
-                            throw new Error(manageExceptions(errorBody));
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const authHeader = data.session_id;
-                    
-                    if (!authHeader) {
-                        throw new Error('SessionId missing.');
-                    }
-                    // Save auth token
-                    sessionId = authHeader;
-                    localStorage.setItem("sessionId", sessionId);
-                    reloadChat();
-                })
-                .catch(error => {
-                    console.log("Can't load chat.");
-                });
-            }
-
-            function makePing() {
-                const headers = {};
-                if (sessionId) {
-                    headers["lh-session-id"] = sessionId;
-                }
-                headers["lh-api-key"] = config.apiKey;
-                fetch(config.webhookUrl + '/login/ping', {        
-                    method: 'GET',
-                    headers: headers
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            messages = [];
-                            localStorage.removeItem('lh-chat-messages');
-                            sessionId = null;
-                            localStorage.removeItem("sessionId");
-                            getAuthToken();
-                        } else {
-                            reloadChat();
-                        }
-                    })
-                    .catch(error => {
-                        reloadForm();
-                    });
-            }
-
-            function sendAudioToBackend(blob) {
-                // Clear input
-                chatInput.value = '';
-                // Add user message to chat
-                addUserMessage('Audio sent');
-                // Show typing indicator
-                const typingIndicator = document.createElement('div');
-                typingIndicator.className = 'lh-typing-indicator';
-                typingIndicator.innerHTML = `
-                    <div class="lh-typing-dot"></div>
-                    <div class="lh-typing-dot"></div>
-                    <div class="lh-typing-dot"></div>
-                `;
-                chatMessages.appendChild(typingIndicator);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                isWaitingForResponse = true;
-                const reader = new FileReader();
-
-
-                reader.onloadend = () => {
-                    const base64Audio = reader.result.split(',')[1]; // quita el encabezado "data:audio/webm;base64,..."
-                    fetch(config.webhookUrl + "/voice", {
+                    isWaitingForResponse = true;
+                    // Send message to webhook
+                    fetch(config.webhookUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -693,44 +489,248 @@
                             'lh-api-key': config.apiKey
                         },
                         body: JSON.stringify({
-                            audio: base64Audio,
+                            message: messageText,
                         })
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(errorBody => {
-                                throw new Error(manageExceptions(errorBody));
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        chatMessages.removeChild(typingIndicator);
-                        addBotMessage(data.output || 'Sorry, I didn\'t understand that.');
-                    })
-                    .catch(error => {
-                        console.error('Message error:', error);
-                        chatMessages.removeChild(typingIndicator);
-                        addBotMessage(error.message || 'Sorry, there was an error processing your message. Please try again.');
-                        stopRecording();
-                    })
-                    .finally(() => {
-                        isWaitingForResponse = false;
-                        stopRecording();
-                    });
-                };
-            
-                reader.readAsDataURL(blob);
-            }
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(errorBody => {
+                                    throw new Error(manageExceptions(errorBody));
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Remove typing indicator
+                            chatMessages.removeChild(typingIndicator);
 
-            function stopRecording() {
-                if (recorder && recorder.state === 'recording') {
-                    recorder.stop();
+                            // Add bot response
+                            addBotMessage(data.output || 'Sorry, I didn\'t understand that.');
+                        })
+                        .catch(error => {
+                            console.error('Message error:', error);
+                            // Remove typing indicator
+                            chatMessages.removeChild(typingIndicator);
+                            // Add error message
+                            addBotMessage(error.message || 'Sorry, there was an error processing your message. Please try again.');
+                        })
+                        .finally(() => {
+                            isWaitingForResponse = false;
+                        });
                 }
-                if (recorder && recorder.stream) {
-                    recorder.stream.getTracks().forEach(track => track.stop());
+
+                function addUserMessage(text) {
+                    printUserMessage(text)
+                    messages.push({
+                        role: 'user',
+                        content: text
+                    });
+                    localStorage.setItem('lh-chat-messages', JSON.stringify(messages));
                 }
-                const micIconSVG = `
+
+                function addBotMessage(text) {
+                    printBotMessage(text)
+                    messages.push({
+                        role: 'assistant',
+                        content: text
+                    });
+                    localStorage.setItem('lh-chat-messages', JSON.stringify(messages));
+                }
+
+                function printUserMessage(text) {
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'lh-message lh-user-message';
+                    messageElement.textContent = text;
+                    chatMessages.appendChild(messageElement);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                function printBotMessage(text) {
+                    // Replace line break for <br>
+                    text = text.replace(/\n/g, '<br>');
+                    // Replace Markdown-style links with <a> tags
+                    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'lh-message lh-bot-message';
+                    messageElement.innerHTML = text;
+                    chatMessages.appendChild(messageElement);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    if (!chatWindow.classList.contains('active')) {
+                        chatLauncher.classList.add('unread');
+                    }
+                }
+
+                function isValidEmail(email) {
+                    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return re.test(email);
+                }
+
+
+                function reloadChat() {
+                    chatMessages.style.display = 'flex';
+                    chatInputContainer.style.display = 'flex';
+                    // Add welcome message
+                    if (messages.length < 1) {
+                        addBotMessage(config.welcomeMessage);
+                        addQuickReplyButtons(config.quickReplies);
+                    } else {
+                        messages.forEach((message, index) => {
+                            if (message.role === 'user' && index != messages.length - 1) { // Print everyone except last
+                                printUserMessage(message.content);
+                            } else if (message.role === 'assistant') {
+                                printBotMessage(message.content);
+                            }
+                        });
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                }
+
+                function addQuickReplyButtons(options) {
+                    const quickReplyContainer = document.createElement('div');
+                    quickReplyContainer.className = 'lh-quick-reply-container';
+
+                    options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.className = 'lh-quick-reply-button';
+                        button.textContent = option;
+                        button.addEventListener('click', () => {
+                            sendMessage(option);
+                            quickReplyContainer.remove(); // Remove buttons after one is clicked
+                        });
+                        quickReplyContainer.appendChild(button);
+                    });
+                    chatMessages.appendChild(quickReplyContainer);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                function getAuthToken() {
+                    const headers = {};
+                    if (sessionId) {
+                        headers["lh-session-id"] = sessionId;
+                    }
+                    headers["lh-api-key"] = config.apiKey;
+                    fetch(config.webhookUrl + '/login', {
+                        method: 'POST',
+                        headers: headers
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(errorBody => {
+                                    throw new Error(manageExceptions(errorBody));
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            const authHeader = data.session_id;
+
+                            if (!authHeader) {
+                                throw new Error('SessionId missing.');
+                            }
+                            // Save auth token
+                            sessionId = authHeader;
+                            localStorage.setItem("sessionId", sessionId);
+                            reloadChat();
+                        })
+                        .catch(error => {
+                            console.log("Can't load chat.");
+                        });
+                }
+
+                function makePing() {
+                    const headers = {};
+                    if (sessionId) {
+                        headers["lh-session-id"] = sessionId;
+                    }
+                    headers["lh-api-key"] = config.apiKey;
+                    fetch(config.webhookUrl + '/login/ping', {
+                        method: 'GET',
+                        headers: headers
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                messages = [];
+                                localStorage.removeItem('lh-chat-messages');
+                                sessionId = null;
+                                localStorage.removeItem("sessionId");
+                                getAuthToken();
+                            } else {
+                                reloadChat();
+                            }
+                        })
+                        .catch(error => {
+                            reloadForm();
+                        });
+                }
+
+                function sendAudioToBackend(blob) {
+                    // Clear input
+                    chatInput.value = '';
+                    // Add user message to chat
+                    addUserMessage('Audio sent');
+                    // Show typing indicator
+                    const typingIndicator = document.createElement('div');
+                    typingIndicator.className = 'lh-typing-indicator';
+                    typingIndicator.innerHTML = `
+                    <div class="lh-typing-dot"></div>
+                    <div class="lh-typing-dot"></div>
+                    <div class="lh-typing-dot"></div>
+                `;
+                    chatMessages.appendChild(typingIndicator);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    isWaitingForResponse = true;
+                    const reader = new FileReader();
+
+
+                    reader.onloadend = () => {
+                        const base64Audio = reader.result.split(',')[1]; // quita el encabezado "data:audio/webm;base64,..."
+                        fetch(config.webhookUrl + "/voice", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'lh-session-id': sessionId,
+                                'lh-api-key': config.apiKey
+                            },
+                            body: JSON.stringify({
+                                audio: base64Audio,
+                            })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(errorBody => {
+                                        throw new Error(manageExceptions(errorBody));
+                                    });
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                chatMessages.removeChild(typingIndicator);
+                                addBotMessage(data.output || 'Sorry, I didn\'t understand that.');
+                            })
+                            .catch(error => {
+                                console.error('Message error:', error);
+                                chatMessages.removeChild(typingIndicator);
+                                addBotMessage(error.message || 'Sorry, there was an error processing your message. Please try again.');
+                                stopRecording();
+                            })
+                            .finally(() => {
+                                isWaitingForResponse = false;
+                                stopRecording();
+                            });
+                    };
+
+                    reader.readAsDataURL(blob);
+                }
+
+                function stopRecording() {
+                    if (recorder && recorder.state === 'recording') {
+                        recorder.stop();
+                    }
+                    if (recorder && recorder.stream) {
+                        recorder.stream.getTracks().forEach(track => track.stop());
+                    }
+                    const micIconSVG = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
                     <path d="M12 1v11"></path>
                     <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
@@ -740,26 +740,26 @@
                     <path d="M8 19h8"></path>
                 </svg>
                 `;
-                recordButton.innerHTML = micIconSVG;
-            }
-            
-
-            function manageExceptions(error) {
-                let errorCode = error.code;
-                switch (errorCode) {
-                    case 'SESSION_ID_NOT_FOUND': return 'Your session has ended. Please refresh the page to start a new one.';
-                    case 'MAX_SESSION_COUNT_REACHED': return 'Our system has reached its hourly limit. Please try again later.';
-                    case 'MAX_LIMIT_COUNT_REACHED': return 'Message limit reached! You’ll be able to send more messages in around 30 minutes.';
-                    default: return 'Sorry, there was an error processing your message. Please try again.';
+                    recordButton.innerHTML = micIconSVG;
                 }
+
+
+                function manageExceptions(error) {
+                    let errorCode = error.code;
+                    switch (errorCode) {
+                        case 'SESSION_ID_NOT_FOUND': return 'Your session has ended. Please refresh the page to start a new one.';
+                        case 'MAX_SESSION_COUNT_REACHED': return 'Our system has reached its hourly limit. Please try again later.';
+                        case 'MAX_LIMIT_COUNT_REACHED': return 'Message limit reached! You’ll be able to send more messages in around 30 minutes.';
+                        default: return 'Sorry, there was an error processing your message. Please try again.';
+                    }
+                }
+
+
+
             }
-
-
-
+            setTimeout(() => launcher.click(), 0)
         }
-        setTimeout(() => launcher.click(), 0)
-    }
 
-    launcher.addEventListener('click', loadWidgetCore)
-  })
+        launcher.addEventListener('click', loadWidgetCore)
+    })
 })()
