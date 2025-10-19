@@ -47,6 +47,15 @@ app.get('/internal-widget-company-wix.js', (req, res) => {
   }
 });
 
+app.use('/assets', express.static(path.join(__dirname, 'assets'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.png')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      res.setHeader('Access-Control-Allow-Origin', '*'); // o tu dominio si querés restringir
+    }
+  }
+}));
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

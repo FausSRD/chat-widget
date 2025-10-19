@@ -13,6 +13,7 @@
         chatBackgroundColor: configSource.chatBackgroundColor || 'white',
         inputBorder: configSource.inputBorder || '#e5e7eb',
         inputBorderHover: configSource.inputBorderHover || "#4f46e5",
+        inputBackgroundColor: configSource.inputBackgroundColor || 'white',
         headerColor: configSource.headerColor || '#4f46e5',
         messageColor: configSource.messageColor || '#4f46e5',
         messageTextColor: configSource.messageTextColor || 'white',
@@ -22,7 +23,8 @@
         sendButtonIconColor: configSource.sendButtonIconColor || 'white',
         sendButtonHooverColor: configSource.sendButtonHooverColor || "#4338ca",
         buttonIconColor: configSource.buttonIconColor || '#4f46e5',
-        activateMic: configSource.activateMic || 'false'
+        activateMic: configSource.activateMic || 'false',
+        inputMessagePlaceHolder: configSource.inputMessagePlaceHolder || 'Type your message...',
     }
 
     function onReady(fn) {
@@ -97,7 +99,12 @@
         const launcher = document.createElement('div')
         launcher.id = 'lh-chat-launcher'
         launcher.className = 'lh-chat-launcher'
-        launcher.innerHTML = '<span class="lh-chat-launcher-icon">💬</span>'
+        launcher.innerHTML = `
+        <span class="lh-chat-launcher-icon">
+            <img src="https://lhai-chat-widget-pre.up.railway.app/assets/botardiumMini.png" alt="" />
+        </span>
+`;
+
         document.body.appendChild(launcher)
 
         const chatHint = document.createElement('div')
@@ -158,7 +165,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid ${config.inputBorder};
+            // border-bottom: 1px solid ${config.inputBorder};
         }
 
         .lh-chat-title {
@@ -210,10 +217,10 @@
 
         .lh-chat-input-container {
             padding: 15px;
-            border-top: 1px solid var(--border-color);
             display: flex;
             gap: 10px;
             display: none;
+            background-color: #ffffff;
         }
 
         .lh-chat-input {
@@ -355,7 +362,7 @@
                 </div>
                 <div class="lh-chat-messages" style="display: none;"></div>
                 <div class="lh-chat-input-container" style="display: none;">
-                    <textarea class="lh-chat-input" placeholder="Type your message..."></textarea>
+                    <textarea class="lh-chat-input" placeholder="${config.inputMessagePlaceHolder}"></textarea>
                     <button class="lh-record-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
                             <path d="M12 1v11"></path>
