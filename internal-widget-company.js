@@ -35,84 +35,84 @@
     onReady(() => {
         const loaderCSS = document.createElement('style')
         loaderCSS.textContent = `
-      .lh-chat-launcher { position: fixed; bottom: 20px; right: 20px;
-        width: 60px; height: 60px; background-color: ${config.buttonIconColor};
-        border-radius: 50%; display: flex; align-items: center;
-        justify-content: center; cursor: pointer;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease; z-index: 9999;
-      }
-      .lh-chat-launcher .lh-chat-launcher-icon { font-size: 28px; }
-      .lh-chat-launcher::after { content: '';
-        position: absolute; top: 10px; right: 10px;
-        width: 10px; height: 10px; background-color: red;
-        border-radius: 50%; display: none; box-shadow: 0 0 2px #fff;
-      }
-      .lh-chat-launcher.unread::after { display: block; }
-      .lh-chat-launcher:hover { transform: scale(1.05); }
-      #lh-chat-hint {
-        position: fixed;
-        ${config.hintPosition}
-        max-width: 130px;
-        white-space: normal;
-        overflow-wrap: break-word;
-        text-align: center;
-        background-color:rgb(255, 255, 255);
-        color:rgb(0, 0, 0);
-        padding: 8px 12px;
-        border-radius: 12px;
-        font-family: ${config.fontFamily};
-        font-size: 14px;
-        font-weight: bold;
-        line-height: 1.3;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        z-index: 9999;
-        animation: bounce 1.5s infinite;
-    }
+            .lh-chat-launcher { position: fixed; bottom: 20px; right: 20px;
+                width: 60px; height: 60px; background-color: ${config.buttonIconColor};
+                border-radius: 50%; display: flex; align-items: center;
+                justify-content: center; cursor: pointer;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease; z-index: 9999;
+            }
+            .lh-chat-launcher .lh-chat-launcher-icon { font-size: 28px; }
+            .lh-chat-launcher::after { content: '';
+                position: absolute; top: 10px; right: 10px;
+                width: 10px; height: 10px; background-color: red;
+                border-radius: 50%; display: none; box-shadow: 0 0 2px #fff;
+            }
+            .lh-chat-launcher.unread::after { display: block; }
+            .lh-chat-launcher:hover { transform: scale(1.05); }
+            #lh-chat-hint {
+                position: fixed;
+                ${config.hintPosition}
+                max-width: 130px;
+                white-space: normal;
+                overflow-wrap: break-word;
+                text-align: center;
+                background-color:rgb(255, 255, 255);
+                color:rgb(0, 0, 0);
+                padding: 8px 12px;
+                border-radius: 12px;
+                font-family: ${config.fontFamily};
+                font-size: 14px;
+                font-weight: bold;
+                line-height: 1.3;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                z-index: 9999;
+                animation: bounce 1.5s infinite;
+            }
 
-    .lh-chat-hint-close {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        font-size: 12px;
-        font-weight: normal;
-        color: #666;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        z-index: 10000;
-        padding: 0;
-        line-height: 1;
-    }
+            .lh-chat-hint-close {
+                position: absolute;
+                top: 6px;
+                right: 6px;
+                font-size: 12px;
+                font-weight: normal;
+                color: #666;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                z-index: 10000;
+                padding: 0;
+                line-height: 1;
+            }
 
-    .lh-chat-hint-close:hover {
-        color: #000;
-    }
+            .lh-chat-hint-close:hover {
+                color: #000;
+            }
 
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-    }
-    `
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-5px); }
+            }
+        `
         document.head.appendChild(loaderCSS)
 
         const launcher = document.createElement('div')
         launcher.id = 'lh-chat-launcher'
         launcher.className = 'lh-chat-launcher'
         launcher.innerHTML = `
-        <span class="lh-chat-launcher-icon">
-            <img src="https://lhai-chat-widget-pre.up.railway.app/assets/botardiumMini.png" alt="" />
-        </span>
-`;
+            <span class="lh-chat-launcher-icon">
+                <img src="https://lhai-chat-widget-pre.up.railway.app/assets/botardiumMini.png" alt="" />
+            </span>
+        `;
 
         document.body.appendChild(launcher)
 
         const chatHint = document.createElement('div')
         chatHint.id = 'lh-chat-hint'
         chatHint.innerHTML = `
-        <span class="lh-chat-hint-close">&times;</span>
-        <span class="lh-chat-hint-text">${config.hintMessage}</span>
-    `
+            <span class="lh-chat-hint-close">&times;</span>
+            <span class="lh-chat-hint-text">${config.hintMessage}</span>
+        `
         document.body.appendChild(chatHint)
         chatHint.querySelector('.lh-chat-hint-close').addEventListener('click', () => {
             chatHint.style.display = 'none';
@@ -124,268 +124,295 @@
 
             const completeStyle = document.createElement('style')
             completeStyle.textContent = `
-        .lh-chat-widget {
-            --light-color: #e0e7ff;
-            --text-color: #1f2937;
-            --border-color: ${config.inputBorder};
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --radius: 12px;
-            --font-family: ${config.fontFamily};
-            font-family: var(--font-family);
-        }
+                .lh-chat-widget {
+                    --light-color: #e0e7ff;
+                    --text-color: #1f2937;
+                    --border-color: ${config.inputBorder};
+                    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    --radius: 12px;
+                    --font-family: ${config.fontFamily};
+                    font-family: var(--font-family);
+                }
 
-        .lh-chat-widget * {
-            font-family: var(--font-family);
-        }
+                .lh-chat-widget * {
+                    font-family: var(--font-family);
+                }
 
-        .lh-chat-window {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 350px;
-            height: 500px;
-            background-color: ${config.chatBackgroundColor};
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 9999;
-            transition: all 0.3s ease;
-        }
+                .lh-chat-window {
+                    position: fixed;
+                    bottom: 90px;
+                    right: 20px;
+                    width: 350px;
+                    height: 500px;
+                    background-color: ${config.chatBackgroundColor};
+                    border-radius: var(--radius);
+                    box-shadow: var(--shadow);
+                    display: none;
+                    flex-direction: column;
+                    overflow: hidden;
+                    z-index: 9999;
+                    transition: all 0.3s ease;
+                }
 
-        .lh-chat-window.active {
-            display: flex;
-        }
+                .lh-chat-window.active {
+                    display: flex;
+                }
 
-        .lh-chat-header {
-            background-color: ${config.headerColor};
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            // border-bottom: 1px solid ${config.inputBorder};
-        }
+                .lh-chat-header {
+                    background-color: ${config.headerColor};
+                    color: white;
+                    padding: 15px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    // border-bottom: 1px solid ${config.inputBorder};
+                }
 
-        .lh-chat-title {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
+                .lh-chat-title {
+                    margin: 0;
+                    font-size: 18px;
+                    font-weight: 600;
+                }
 
-        .lh-chat-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 0;
-        }
+                .lh-chat-close {
+                    background: none;
+                    border: none;
+                    color: white;
+                    font-size: 20px;
+                    cursor: pointer;
+                    padding: 0;
+                }
 
-        .lh-chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            display: none;
-        }
+                .lh-chat-messages {
+                    flex: 1;
+                    padding: 15px;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    display: none;
+                }
 
-        .lh-message {
-            max-width: 80%;
-            padding: 10px 15px;
-            border-radius: 18px;
-            line-height: 1.4;
-            word-wrap: break-word;
-            font-size: 14px;
-        }
+                .lh-message {
+                    max-width: 80%;
+                    padding: 10px 15px;
+                    border-radius: 18px;
+                    line-height: 1.4;
+                    word-wrap: break-word;
+                    font-size: 14px;
+                }
 
-        .lh-bot-message {
-            align-self: flex-start;
-            background-color: ${config.botMessageColor};
-            color: ${config.botMessageTextColor};
-            border-bottom-left-radius: 5px;
-        }
+                .lh-bot-message {
+                    align-self: flex-start;
+                    background-color: ${config.botMessageColor};
+                    color: ${config.botMessageTextColor};
+                    border-bottom-left-radius: 5px;
+                }
 
-        .lh-user-message {
-            align-self: flex-end;
-            background-color: ${config.messageColor};
-            color: ${config.messageTextColor};
-            border-bottom-right-radius: 5px;
-        }
+                .lh-user-message {
+                    align-self: flex-end;
+                    background-color: ${config.messageColor};
+                    color: ${config.messageTextColor};
+                    border-bottom-right-radius: 5px;
+                }
 
-        .lh-chat-input-container {
-            padding: 15px;
-            display: flex;
-            gap: 10px;
-            display: none;
-            background-color: #ffffff;
-        }
+                .lh-chat-input-container {
+                    padding: 15px;
+                    display: flex;
+                    gap: 10px;
+                    display: none;
+                    background-color: #ffffff;
+                }
 
-        .lh-chat-input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid ${config.inputBorder};
-            background-color: ${config.chatBackgroundColor};
-            border-radius: 20px;
-            font-size: 14px;
-            resize: none;
-            max-height: 100px;
-            overflow-y: auto;
-        }
+                .lh-chat-input {
+                    flex: 1;
+                    padding: 10px 15px;
+                    border: 1px solid ${config.inputBorder};
+                    background-color: ${config.chatBackgroundColor};
+                    border-radius: 20px;
+                    font-size: 14px;
+                    resize: none;
+                    max-height: 100px;
+                    overflow-y: auto;
+                }
 
-        .lh-chat-input:focus {
-            outline: none;
-            border-color: ${config.inputBorderHover};
-        }
+                .lh-chat-input:focus {
+                    outline: none;
+                    border-color: ${config.inputBorderHover};
+                }
 
-        .lh-send-button {
-            width: 40px;
-            height: 40px;
-            background-color: ${config.sendButtonColor};
-            color: ${config.sendButtonIconColor};
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+                .lh-send-button {
+                    width: 40px;
+                    height: 40px;
+                    background-color: ${config.sendButtonColor};
+                    color: ${config.sendButtonIconColor};
+                    border: none;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                }
 
-        .lh-send-button:hover {
-            background-color: ${config.sendButtonHooverColor};
-        }
+                .lh-send-button:hover {
+                    background-color: ${config.sendButtonHooverColor};
+                }
 
-        .lh-record-button {
-            width: 40px;
-            height: 40px;
-            background-color: ${config.sendButtonColor};
-            color: ${config.sendButtonIconColor};
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: ${config.activateMic == "true" ? 'flex' : 'none'};
-        }
+                .lh-record-button {
+                    width: 40px;
+                    height: 40px;
+                    background-color: ${config.sendButtonColor};
+                    color: ${config.sendButtonIconColor};
+                    border: none;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                    display: ${config.activateMic == "true" ? 'flex' : 'none'};
+                }
 
-        .lh-record-button:hover {
-            background-color:  ${config.sendButtonHooverColor};
-        }
+                .lh-record-button:hover {
+                    background-color:  ${config.sendButtonHooverColor};
+                }
 
-        .lh-typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 10px 15px;
-            background-color: ${config.botMessageColor};
-            border-radius: 18px;
-            border-bottom-left-radius: 5px;
-            align-self: flex-start;
-            margin-bottom: 5px;
-        }
+                .lh-typing-indicator {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    padding: 10px 15px;
+                    background-color: ${config.botMessageColor};
+                    border-radius: 18px;
+                    border-bottom-left-radius: 5px;
+                    align-self: flex-start;
+                    margin-bottom: 5px;
+                }
 
-        .lh-typing-dot {
-            width: 8px;
-            height: 8px;
-            background-color: ${config.botMessageTextColor};
-            border-radius: 50%;
-            animation: typing 1.4s infinite ease-in-out;
-        }
+                .lh-typing-dot {
+                    width: 8px;
+                    height: 8px;
+                    background-color: ${config.botMessageTextColor};
+                    border-radius: 50%;
+                    animation: typing 1.4s infinite ease-in-out;
+                }
 
-        .lh-typing-dot:nth-child(1) {
-            animation-delay: 0s;
-        }
+                .lh-typing-dot:nth-child(1) {
+                    animation-delay: 0s;
+                }
 
-        .lh-typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
+                .lh-typing-dot:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
 
-        .lh-typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+                .lh-typing-dot:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
 
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-5px);
-            }
-        }
+                @keyframes typing {
+                    0%, 60%, 100% {
+                        transform: translateY(0);
+                    }
+                    30% {
+                        transform: translateY(-5px);
+                    }
+                }
 
-        .lh-quick-reply-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            /* Removed justify-content: center; */
-            align-self: flex-start;
-            max-width: 80%; /* Keep max-width for the container */
-            align-items: flex-start; /* Align items to the start (left) */
-        }
+                .lh-quick-reply-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                    /* Removed justify-content: center; */
+                    align-self: flex-start;
+                    max-width: 80%; /* Keep max-width for the container */
+                    align-items: flex-start; /* Align items to the start (left) */
+                }
 
-        .lh-quick-reply-button {
-            background-color: #e0e0e0;
-            color: #333;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            font-weight: normal;
-            padding: 10px 15px;
-            line-height: 1.4;
-        }
+                .lh-quick-reply-button {
+                    background-color: #e0e0e0;
+                    color: #333;
+                    border: none;
+                    border-radius: 15px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background-color 0.3s ease;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    font-weight: normal;
+                    padding: 10px 15px;
+                    line-height: 1.4;
+                }
 
-        .lh-quick-reply-button:hover {
-            background-color: #d0d0d0;
-        }
+                .lh-quick-reply-button:hover {
+                    background-color: #d0d0d0;
+                }
 
-        .lh-quick-reply-button:active {
-            background-color: #c0c0c0;
-            transform: translateY(1px);
-        }
-        `
+                .lh-quick-reply-button:active {
+                    background-color: #c0c0c0;
+                    transform: translateY(1px);
+                }
+
+                @media screen and (max-width: 480px) {
+                    .lh-chat-window {
+                        width: 100%;
+                        height: 90%;
+                        bottom: 10%;
+                        right: 0;
+                        border-radius: 0;
+                    }
+
+                    .lh-chat-messages {
+                        padding: 10px;
+                    }
+
+                    .lh-message {
+                        max-width: 85%;
+                    }
+                }
+
+                @media screen and (max-width: 768px) and (min-width: 481px) {
+                    .lh-chat-window {
+                        width: 85%;
+                        height: 80%;
+                        bottom: 10%;
+                        right: 7.5%;
+                    }
+                }
+            `
             document.head.appendChild(completeStyle)
 
             const html = `
-        <div class="lh-chat-widget">
-            <div class="lh-chat-window">
-                <div class="lh-chat-header">
-                    <h3 class="lh-chat-title">AI Support Assistant</h3>
-                    <button class="lh-chat-close">&times;</button>
+                <div class="lh-chat-widget">
+                    <div class="lh-chat-window">
+                        <div class="lh-chat-header">
+                            <h3 class="lh-chat-title">AI Support Assistant</h3>
+                            <button class="lh-chat-close">&times;</button>
+                        </div>
+                        <div class="lh-chat-messages" style="display: none;"></div>
+                        <div class="lh-chat-input-container" style="display: none;">
+                            <textarea class="lh-chat-input" placeholder="${config.inputMessagePlaceHolder}"></textarea>
+                            <button class="lh-record-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
+                                    <path d="M12 1v11"></path>
+                                    <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
+                                    <line x1="19" y1="10" x2="19" y2="10"></line>
+                                    <line x1="5" y1="10" x2="5" y2="10"></line>
+                                    <path d="M12 15v4"></path>
+                                    <path d="M8 19h8"></path>
+                                </svg>
+                            </button>
+                            <button class="lh-send-button">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="lh-chat-messages" style="display: none;"></div>
-                <div class="lh-chat-input-container" style="display: none;">
-                    <textarea class="lh-chat-input" placeholder="${config.inputMessagePlaceHolder}"></textarea>
-                    <button class="lh-record-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
-                            <path d="M12 1v11"></path>
-                            <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
-                            <line x1="19" y1="10" x2="19" y2="10"></line>
-                            <line x1="5" y1="10" x2="5" y2="10"></line>
-                            <path d="M12 15v4"></path>
-                            <path d="M8 19h8"></path>
-                        </svg>
-                    </button>
-                    <button class="lh-send-button">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-        `
+            `
             const temp = document.createElement('template')
             temp.innerHTML = html.trim()
             const widgetContainer = temp.content.firstElementChild
@@ -683,15 +710,14 @@
                     const typingIndicator = document.createElement('div');
                     typingIndicator.className = 'lh-typing-indicator';
                     typingIndicator.innerHTML = `
-                    <div class="lh-typing-dot"></div>
-                    <div class="lh-typing-dot"></div>
-                    <div class="lh-typing-dot"></div>
-                `;
+                        <div class="lh-typing-dot"></div>
+                        <div class="lh-typing-dot"></div>
+                        <div class="lh-typing-dot"></div>
+                    `;
                     chatMessages.appendChild(typingIndicator);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                     isWaitingForResponse = true;
                     const reader = new FileReader();
-
 
                     reader.onloadend = () => {
                         const base64Audio = reader.result.split(',')[1]; // quita el encabezado "data:audio/webm;base64,..."
@@ -706,30 +732,29 @@
                                 audio: base64Audio,
                             })
                         })
-                            .then(response => {
-                                if (!response.ok) {
-                                    return response.json().then(errorBody => {
-                                        throw new Error(manageExceptions(errorBody));
-                                    });
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                chatMessages.removeChild(typingIndicator);
-                                addBotMessage(data.output || 'Sorry, I didn\'t understand that.');
-                            })
-                            .catch(error => {
-                                console.error('Message error:', error);
-                                chatMessages.removeChild(typingIndicator);
-                                addBotMessage(error.message || 'Sorry, there was an error processing your message. Please try again.');
-                                stopRecording();
-                            })
-                            .finally(() => {
-                                isWaitingForResponse = false;
-                                stopRecording();
-                            });
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(errorBody => {
+                                    throw new Error(manageExceptions(errorBody));
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            chatMessages.removeChild(typingIndicator);
+                            addBotMessage(data.output || 'Sorry, I didn\'t understand that.');
+                        })
+                        .catch(error => {
+                            console.error('Message error:', error);
+                            chatMessages.removeChild(typingIndicator);
+                            addBotMessage(error.message || 'Sorry, there was an error processing your message. Please try again.');
+                            stopRecording();
+                        })
+                        .finally(() => {
+                            isWaitingForResponse = false;
+                            stopRecording();
+                        });
                     };
-
                     reader.readAsDataURL(blob);
                 }
 
@@ -741,18 +766,17 @@
                         recorder.stream.getTracks().forEach(track => track.stop());
                     }
                     const micIconSVG = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
-                    <path d="M12 1v11"></path>
-                    <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
-                    <line x1="19" y1="10" x2="19" y2="10"></line>
-                    <line x1="5" y1="10" x2="5" y2="10"></line>
-                    <path d="M12 15v4"></path>
-                    <path d="M8 19h8"></path>
-                </svg>
-                `;
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic">
+                            <path d="M12 1v11"></path>
+                            <path d="M8 5a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0z"></path>
+                            <line x1="19" y1="10" x2="19" y2="10"></line>
+                            <line x1="5" y1="10" x2="5" y2="10"></line>
+                            <path d="M12 15v4"></path>
+                            <path d="M8 19h8"></path>
+                        </svg>
+                    `;
                     recordButton.innerHTML = micIconSVG;
                 }
-
 
                 function manageExceptions(error) {
                     let errorCode = error.code;
@@ -763,8 +787,6 @@
                         default: return 'Sorry, there was an error processing your message. Please try again.';
                     }
                 }
-
-
 
             }
             setTimeout(() => launcher.click(), 0)
