@@ -451,7 +451,16 @@
           const temp = document.createElement('template')
           temp.innerHTML = html.trim()
           const widgetContainer = temp.content.firstElementChild
-          document.body.appendChild(widgetContainer)
+          const lhShadowHost = document.createElement('div')
+          lhShadowHost.id = 'lh-shadow-host'
+          
+          lhShadowHost.style.position = 'fixed'
+          lhShadowHost.style.bottom = '20px'
+          lhShadowHost.style.right = '20px'
+          lhShadowHost.style.zIndex = '999999'
+          
+          document.body.appendChild(lhShadowHost)
+          
 
           widgetContainer
               .querySelector('.lh-chat-title')
