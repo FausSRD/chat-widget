@@ -453,13 +453,17 @@
           const widgetContainer = temp.content.firstElementChild
           const lhShadowHost = document.createElement('div')
           lhShadowHost.id = 'lh-shadow-host'
-          
           lhShadowHost.style.position = 'fixed'
           lhShadowHost.style.bottom = '20px'
           lhShadowHost.style.right = '20px'
           lhShadowHost.style.zIndex = '999999'
           
           document.body.appendChild(lhShadowHost)
+          
+          const shadowRoot = lhShadowHost.attachShadow({ mode: 'open' })
+          shadowRoot.appendChild(completeStyle)
+          shadowRoot.appendChild(widgetContainer)
+          
           
 
           widgetContainer
