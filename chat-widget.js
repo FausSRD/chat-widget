@@ -5,7 +5,7 @@
         webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
         title: configSource.title || 'DealerPRO Support Assistant',
         welcomeMessage: configSource.welcomeMessage || "Hi! I'm your virtual assistant. How can i help you?",
-        recaptchaSiteKey: configSource.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf',
+        recaptchaSiteKey: configSource.recaptchaSiteKey || '123',
         quickReplies: configSource.quickReplies || ['Browse Newest Inventory', 'Apply for Financing', 'Schedule a Test Ride'],
         fontFamily: configSource.fontFamily || "Arial",
         hintPosition: configSource.hintPosition === 'top' ? 'bottom: 90px; right: 20px;' : 'bottom: 20px; right: 90px;',
