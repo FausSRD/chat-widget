@@ -17,33 +17,32 @@
     <!-- Chat Widget Configuration -->
     <script>
         window.ChatWidgetConfig = {
-            title: 'Titulo leadhook', // Titulo chat
-            welcomeMessage: 'Hola amigo, como andas?', // Mensaje de bienvenida
-            recaptchaSiteKey: '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf', // TODO: No pasar este a los clientes
-            quickReplies: ['Mostrame el inventario mas nuevo', 'Tenes algun ford focus?'], // Mensajes por defecto
-            apiKey: '123',
-            buttonIconColor : '#CE011F', // El icono del chat
-            fontFamily : 'roboto', // Fuente, por defecto arial
-            hintMessage: 'HOLA QUERIDOOOO',
-            chatBackgroundColor: "#ECECEC",
-            inputBorder : 'black',
-            inputBorderHover : '#CE011F',
-            headerColor : '#CE011F',
-            messageColor : 'white',
-            messageTextColor : '#1f2937',
-            botMessageColor : '#CE011F',
-            botMessageTextColor : 'white',
-            sendButtonColor : '#4D4D4D',
-            sendButtonIconColor : 'white',
-            sendButtonHooverColor: '#CE011F',
-            activateMic: 'true',
-            inputBackgroundColor: "#ffffff",
-            inputMessagePlaceHolder: "Diz-me o que precisas"
+            title: 'Chat with Text',
+            welcomeMessage: "Howdy! I\'m Tex. Looking for tractors, mowers, or side-by-sides?",
+            quickReplies: ['Show me zero-turn mowers', 'Do you have tractors in stock?', 'How does financing work?'],
+            fontFamily: "Arial",
+            hintPosition: 'top' ? 'bottom: 90px; right: 20px;' : 'bottom: 20px; right: 90px;',
+            hintMessage: 'Need help? Chat with Tex!',
+            chatBackgroundColor: '#f8f8f8',                // fondo chat sutil gris claro
+            inputBorder: '#d1d5db',                        // borde input gris normal
+            inputBorderHover: '#c8102e',                   // foco = rojo del sitio
+            inputBackgroundColor: '#ffffff',               // caja texto blanca limpia
+            headerColor: '#000000',                        // header negro como el sitio
+            messageColor: '#000000',                       // mensajes usuario: rojo texano fuerte (ya está bien)
+            messageTextColor: '#ffffff',                  // texto en mensajes usuario = blanco
+            botMessageColor: '#f0f4f8',                    // mensajes bot: azul-gris muy claro (o #ffffff con tinte) → se distingue sin ser fuerte
+            botMessageTextColor: '#1f2937',               // texto bot = gris oscuro legible
+            sendButtonColor: '#000000',                    // botón send = rojo fuerte
+            sendButtonIconColor: '#ffffff',                // ícono flecha = blanco (arregla lo feo del negro)
+            sendButtonHooverColor: '#e53935',              // hover = rojo más vivo
+            buttonIconColor: '#000000',  // COLOR DEL BOTON?... NO SE PORQUE ESTE NOMBRE                  // otros iconos = rojo
+            activateMic: 'false',
+            inputMessagePlaceHolder: 'Ask me anything...',
         };
     </script>
     <!-- <script src="https://lhai-chat-widget-pre.up.railway.app/chat-widget.js"></script> -->
     <!-- <script src="https://lhai-chat-widget-pre.up.railway.app/internal-widget-company.js"></script> -->
-    <!-- <script src="chat-widget.js"></script> -->
-    <script src="internal-widget-company.js"></script>
+    <script src="chat-widget.js"></script>
+    <!-- <script src="internal-widget-company.js"></script> -->
 </body>
 </html>
