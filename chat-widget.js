@@ -25,6 +25,8 @@
         buttonIconColor: configSource.buttonIconColor || '#4f46e5',
         activateMic: configSource.activateMic || 'false',
         inputMessagePlaceHolder: configSource.inputMessagePlaceHolder || 'Type your message...',
+        launcherImage: configSource.launcherImage || null,
+        launcherImageSize: configSource.launcherImageSize || '80px',
     }
 
     function onReady(fn) {
@@ -32,6 +34,7 @@
         else document.addEventListener('DOMContentLoaded', fn)
     }
     console.log('Font family:', config.fontFamily);
+    console.log('Launcher image:', config.launcherImage);
     onReady(() => {
         const loaderCSS = document.createElement('style')
         loaderCSS.textContent = `
@@ -50,6 +53,17 @@
       }
       .lh-chat-launcher.unread::after { display: block; }
       .lh-chat-launcher:hover { transform: scale(1.05); }
+      .lh-chat-launcher.lh-chat-launcher-custom {
+        background-color: transparent;
+        border-radius: 0;
+        box-shadow: none;
+        width: auto;
+        height: auto;
+      }
+      .lh-chat-launcher.lh-chat-launcher-custom img {
+        width: ${config.launcherImageSize};
+        height: auto;
+      }
       #lh-chat-hint {
         position: fixed;
         ${config.hintPosition}
@@ -98,12 +112,14 @@
 
         const launcher = document.createElement('div')
         launcher.id = 'lh-chat-launcher'
-        launcher.className = 'lh-chat-launcher'
-        launcher.innerHTML = `
-        <span class="lh-chat-launcher-icon">
-            <img src="https://lhai-chat-widget-pre.up.railway.app/assets/botardiumMini.png" alt="" />
-        </span>
-    `;
+        launcher.className = config.launcherImage
+            ? 'lh-chat-launcher lh-chat-launcher-custom'
+            : 'lh-chat-launcher'
+        launcher.innerHTML = config.launcherImage
+            ? `<img src="${config.launcherImage}" alt="" />`
+            : `<span class="lh-chat-launcher-icon">
+                <img src="https://lhai-chat-widget-pre.up.railway.app/assets/botardiumMini.png" alt="" />
+            </span>`;
         document.body.appendChild(launcher)
 
         const chatHint = document.createElement('div')
