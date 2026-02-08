@@ -1,9 +1,7 @@
 /**
  * Chat Widget Golden - Self-contained widget loader
- * Usage: <script src="https://lhai-chat-widget-pre.up.railway.app/chat-widget-golden.js"></script>
  */
 (function() {
-    // Configuration controlled by you
     window.ChatWidgetConfig = {
         title: 'Chat with Text',
         welcomeMessage: "Howdy! I'm Tex. Looking for tractors, mowers, or side-by-sides?",
@@ -30,7 +28,6 @@
         launcherImageSize: '90px',
     };
 
-    // Load the main widget script
     var script = document.createElement('script');
     script.src = 'https://lhai-chat-widget-pre.up.railway.app/chat-widget.js';
     script.async = true;
