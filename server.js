@@ -47,6 +47,20 @@ app.get('/internal-widget-company-wix.js', (req, res) => {
   }
 });
 
+app.get('/chat-widget-golden.js', (req, res) => {
+  const acceptEncoding = req.headers['accept-encoding'] || '';
+  const basePath = path.join(__dirname, 'chat-widget-golden.js');
+
+  if (acceptEncoding.includes('gzip') && fs.existsSync(basePath + '.gz')) {
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Content-Type', 'application/javascript');
+    fs.createReadStream(basePath + '.gz').pipe(res);
+  } else {
+    res.setHeader('Content-Type', 'application/javascript');
+    fs.createReadStream(basePath).pipe(res);
+  }
+});
+
 app.use('/assets', express.static(path.join(__dirname, 'assets'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.png')) {
