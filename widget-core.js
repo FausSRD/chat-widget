@@ -3,7 +3,6 @@
 
     const config = {
       webhookUrl: 'https://leadhookai-pre.up.railway.app/app-backend-api/v1/chat',
-    //   webhookUrl: 'http://localhost:8080/app-backend-api/v1/chat',
       title: configSource.title || 'LeadhookAi Support Assistant',
       welcomeMessage: configSource.welcomeMessage || 'Hello stranger, welcome to the demo.',
       recaptchaSiteKey: configSource.recaptchaSiteKey || '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf',
