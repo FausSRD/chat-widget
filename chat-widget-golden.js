@@ -26,7 +26,7 @@
         inputMessagePlaceHolder: 'Ask me anything...',
         launcherImage: 'https://lhai-chat-widget-pre.up.railway.app/assets/tex.png',
         launcherImageSize: '90px',
-        recaptchaSiteKey: '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf',
+        recaptchaSiteKey: '6LcZP20rAAAAAERBTJc5DFZGGyU7RJuoOqWEC5xf'
     };
 
     var script = document.createElement('script');
