@@ -70,6 +70,11 @@ app.use('/assets', express.static(path.join(__dirname, 'assets'), {
   }
 }));
 
+// v1 (widget nuevo + demos index.html/index2.html) servido como estáticos para dev.
+// http://localhost:3000/v1/index.html   (mock)
+// http://localhost:3000/v1/index2.html  (embed real contra el gateway)
+app.use('/v1', express.static(path.join(__dirname, 'v1')));
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

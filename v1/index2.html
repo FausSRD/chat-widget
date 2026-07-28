@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoPlanet — Concesionaria</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #0f172a; }
+    header { background: #0f172a; color: #fff; padding: 18px 28px; display: flex; align-items: center; gap: 20px; }
+    header .logo { font-size: 20px; font-weight: 800; }
+    header nav { margin-left: auto; display: flex; gap: 22px; font-size: 14px; opacity: .85; }
+    .hero { padding: 80px 28px; text-align: center; background: linear-gradient(120deg, #1e293b, #334155); color: #fff; }
+    .hero h1 { font-size: 40px; font-weight: 800; }
+    .hero p { margin-top: 12px; font-size: 18px; opacity: .85; }
+    .content { max-width: 900px; margin: 0 auto; padding: 60px 28px; line-height: 1.7; color: #334155; }
+    .content h2 { color: #0f172a; margin-bottom: 12px; }
+    footer { background: #f1f5f9; padding: 28px; text-align: center; color: #94a3b8; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Auto<span style="color:#38bdf8">Planet</span></div>
+    <nav><span>Nuevos</span><span>Usados</span><span>Financiación</span><span>Contacto</span></nav>
+  </header>
+
+  <section class="hero">
+    <h1>Tu próximo auto te está esperando</h1>
+    <p>Más de 200 vehículos nuevos y usados con financiación a medida.</p>
+  </section>
+
+  <section class="content">
+    <h2>Sobre nosotros</h2>
+    <p>Somos una concesionaria con más de 20 años de trayectoria. Página de ejemplo para probar
+       el chat widget embebido tal cual lo cargaría un cliente real en su sitio. El chat aparece
+       abajo a la derecha.</p>
+  </section>
+
+  <footer>© 2026 AutoPlanet — Página de ejemplo</footer>
+
+
+  <!-- ============================================================================
+       EMBED DEL CHAT WIDGET (LEAD)  ·  esto es lo único que el cliente pega en su sitio
+       ----------------------------------------------------------------------------
+       En producción:
+         - gatewayUrl  → la URL del widget-gateway deployado (Railway)
+         - src         → la URL del CDN donde se sirve chat-widget.js (ej: el .gz)
+       ============================================================================ -->
+  <script>
+    window.ChatWidgetConfig = {
+      clientId: 'clientTest',
+      gatewayUrl: 'http://localhost:8080'   // en prod: https://tu-gateway.up.railway.app
+    };
+  </script>
+  <script src="./chat-widget.js" defer></script>
+  <!-- ==================== fin embed ==================== -->
+</body>
+</html>

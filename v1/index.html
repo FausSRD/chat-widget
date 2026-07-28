@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Widget v1 — Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; color: #0f172a; background: #f8fafc; }
+
+    /* --- barra superior tipo concesionaria (solo para dar contexto a la demo) --- */
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; }
+    .topbar-inner { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
+    .logo { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+    .logo b { color: #e11d48; }
+    .nav { margin-left: auto; display: flex; gap: 22px; font-size: 14px; font-weight: 600; color: #475569; }
+    .nav span:last-child { background: #e11d48; color: #fff; padding: 6px 14px; border-radius: 8px; }
+
+    .hero { position: relative; height: 460px; overflow: hidden;
+      background: linear-gradient(120deg, #0f172a, #1e293b); display: flex; align-items: center; }
+    .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55; }
+    .hero-content { position: relative; max-width: 1200px; margin: 0 auto; padding: 0 24px; color: #fff; }
+    .hero-content h1 { font-size: 44px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; max-width: 640px; }
+    .hero-content p { margin-top: 14px; font-size: 18px; opacity: .9; max-width: 520px; }
+    .hero-content .cta { margin-top: 24px; display: inline-block; background: #e11d48; color: #fff; padding: 13px 26px; border-radius: 10px; font-weight: 700; text-decoration: none; }
+
+    .info { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+    .info h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; }
+    .note { margin-top: 12px; padding: 18px 20px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 14px; font-size: 14px; line-height: 1.6; color: #3730a3; max-width: 720px; }
+    .note b { color: #1e1b4b; }
+    .note code { background: #fff; padding: 2px 6px; border-radius: 5px; font-size: 13px; }
+
+    .switcher { margin-top: 22px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .switcher button { padding: 9px 16px; border: 1.5px solid #cbd5e1; background: #fff; border-radius: 999px; font-weight: 600; font-size: 13.5px; cursor: pointer; color: #334155; }
+    .switcher button.active { border-color: #e11d48; background: #e11d48; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">Jonker <b>Honda</b></div>
+      <nav class="nav"><span>Nuevos</span><span>Usados</span><span>Financiación</span><span>Contacto</span></nav>
+    </div>
+  </div>
+
+  <section class="hero">
+    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&q=80" alt="">
+    <div class="hero-content">
+      <h1>Encontrá tu próximo vehículo</h1>
+      <p>Más de 200 modelos nuevos y usados. Preguntale a nuestro asistente y te ayuda a elegir.</p>
+      <a class="cta" href="#">Ver inventario</a>
+    </div>
+  </section>
+
+  <section class="info">
+    <h2>Demo del chat widget v1</h2>
+    <div class="note">
+      <b>Esto es una previsualización en modo mock</b> (sin backend). Abrí el chat abajo a la derecha:
+      completá el cuestionario (cualquier dato entra) y escribí <code>ver inventario</code> o tocá el quick reply
+      para ver las <b>cards de vehículos</b> y la <b>card expandida con specs</b>.<br>
+      Cambiá el tema para ver el nivel de customización que se sirve desde el backend:
+    </div>
+    <div class="switcher">
+      <button data-theme="honda" class="active">Honda (rojo)</button>
+      <button data-theme="indigo">Indigo</button>
+      <button data-theme="emerald">Emerald</button>
+      <button data-theme="dark">Slate</button>
+      <button data-theme="english">English 🇬🇧 (i18n)</button>
+    </div>
+  </section>
+
+  <!-- ================= CONFIG DEL WIDGET (en prod viene del backend) ================= -->
+  <script>
+    const THEMES = {
+      honda: {
+        agentName: 'Emily', agentStatus: 'Online',
+        agentAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80',
+        brandColor: '#e11d48', brandColorDark: '#9f1239',
+        title: 'Jonker Honda', welcomeMessage: '¡Hola! Soy Emily 👋 ¿Buscás un modelo en particular o querés que te muestre las novedades?',
+        quickReplies: ['Ver inventario', 'Financiación', 'Agendar test drive'],
+        poweredByText: 'Powered by FullGrowth', hintMessage: '¿Buscás un auto? Preguntame 🚗',
+      },
+      indigo: {
+        agentName: 'Nova', agentStatus: 'Online', agentAvatar: null,
+        brandColor: '#4f46e5', brandColorDark: '#3730a3',
+        title: 'Asistente', welcomeMessage: '¡Hola! ¿En qué te puedo ayudar hoy?',
+        quickReplies: ['Ver inventario', 'Financiación', 'Agendar visita'], hintMessage: 'Escribime, estoy para ayudarte',
+      },
+      emerald: {
+        agentName: 'Lucas', agentStatus: 'Online', agentAvatar: null,
+        brandColor: '#059669', brandColorDark: '#047857',
+        title: 'Concesionaria', welcomeMessage: '¡Buenas! ¿Querés ver el inventario disponible?',
+        quickReplies: ['Ver inventario', 'Usados', 'Contacto'], hintMessage: '¿Te ayudo a elegir? 🌿',
+      },
+      dark: {
+        agentName: 'Max', agentStatus: 'Online', agentAvatar: null,
+        brandColor: '#0f172a', brandColorDark: '#020617',
+        title: 'Sales', welcomeMessage: 'Hola 👋 Contame qué estás buscando.',
+        quickReplies: ['Ver inventario', 'Ofertas', 'Financiación'], hintMessage: 'Estoy online ahora',
+      },
+      // demo de i18n: el "chrome" (form, botones, cards) viene del objeto `text`
+      english: {
+        agentName: 'Emily', agentStatus: 'Online',
+        agentAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80',
+        brandColor: '#2563eb', brandColorDark: '#1e40af',
+        title: 'Motors', welcomeMessage: "Hi! I'm Emily 👋 Looking for a specific model or want to see what's new?",
+        formIntro: 'Before we start, leave your details so we can help you better.',
+        inputPlaceholder: 'Type any question here...',
+        quickReplies: ['Browse inventory', 'Financing', 'Book a test drive'],
+        startButtonText: 'Start chat', poweredByText: 'Powered by FullGrowth',
+        hintMessage: 'Looking for a car? Ask me 🚗',
+        text: {
+          nameLabel: 'Name', namePlaceholder: 'Your name',
+          emailLabel: 'Email', phoneLabel: 'Phone', phonePlaceholder: '+1 555 555 5555',
+          nameError: 'Enter your name', emailError: 'Enter a valid email', phoneError: 'Enter a valid phone',
+          privacy: 'By continuing you agree to be contacted. Protected by reCAPTCHA.',
+          vinLabel: 'VIN', stockLabel: 'Stock #', priceLabel: 'Price',
+          vDetail: 'View details', vSelect: "I'm interested", vInterested: "I'm interested in the",
+          ctaPrimary: 'Visit us in person', ctaSecondary: 'Go to vehicle page',
+        },
+      },
+    };
+
+    function loadWidget(theme) {
+      // limpiar instancia previa (para la demo del switcher)
+      document.querySelectorAll('.lhw').forEach((n) => n.remove());
+      document.querySelectorAll('script[data-widget]').forEach((n) => n.remove());
+      window.widgetCoreLoaded = false;
+
+      window.ChatWidgetConfig = {
+        clientId: 'clientTest',
+        gatewayUrl: 'http://localhost:8080',
+        mock: true,                    // demo sin backend
+        overrides: THEMES[theme],      // en prod esto lo sirve GET /api/v2/config/{clientId}
+      };
+      const s = document.createElement('script');
+      s.src = './chat-widget.js';
+      s.setAttribute('data-widget', '1');
+      document.body.appendChild(s);
+    }
+
+    document.querySelectorAll('.switcher button').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.switcher button').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        localStorage.clear(); // reset de sesión/mensajes mock para ver el form de nuevo
+        loadWidget(b.dataset.theme);
+      });
+    });
+
+    loadWidget('honda');
+  </script>
+</body>
+</html>
