@@ -55,10 +55,10 @@
   <section class="info">
     <h2>Demo del chat widget v1</h2>
     <div class="note">
-      <b>Esto es una previsualización en modo mock</b> (sin backend). Abrí el chat abajo a la derecha:
-      completá el cuestionario (cualquier dato entra) y escribí <code>ver inventario</code> o tocá el quick reply
-      para ver las <b>cards de vehículos</b> y la <b>card expandida con specs</b>.<br>
-      Cambiá el tema para ver el nivel de customización que se sirve desde el backend:
+      <b>Demo contra el gateway real</b> — necesita el widget-gateway levantado en <code>localhost:8080</code>
+      y el client <code>clientTest</code> activo. Abrí el chat abajo a la derecha y completá el cuestionario.<br>
+      El selector de tema aplica <code>overrides</code> sobre la config del backend (en prod eso lo sirve
+      <code>GET /api/v2/config/{clientId}</code>) — sirve para ver el nivel de customización.
     </div>
     <div class="switcher">
       <button data-theme="honda" class="active">Honda (rojo)</button>
@@ -113,9 +113,9 @@
           nameLabel: 'Name', namePlaceholder: 'Your name',
           emailLabel: 'Email', phoneLabel: 'Phone', phonePlaceholder: '+1 555 555 5555',
           nameError: 'Enter your name', emailError: 'Enter a valid email', phoneError: 'Enter a valid phone',
-          privacy: 'By continuing you agree to be contacted. Protected by reCAPTCHA.',
+          privacy: 'By continuing you agree to be contacted.', recaptchaNotice: 'Protected by reCAPTCHA.',
           vinLabel: 'VIN', stockLabel: 'Stock #', priceLabel: 'Price',
-          vDetail: 'View details', vSelect: "I'm interested", vInterested: "I'm interested in the",
+          vDetail: 'View details', vSelect: "I'm interested", vInterested: "I'm interested in the", back: 'Back',
           ctaPrimary: 'Visit us in person', ctaSecondary: 'Go to vehicle page',
         },
       },
@@ -130,7 +130,6 @@
       window.ChatWidgetConfig = {
         clientId: 'clientTest',
         gatewayUrl: 'http://localhost:8080',
-        mock: true,                    // demo sin backend
         overrides: THEMES[theme],      // en prod esto lo sirve GET /api/v2/config/{clientId}
       };
       const s = document.createElement('script');
@@ -143,7 +142,7 @@
       b.addEventListener('click', () => {
         document.querySelectorAll('.switcher button').forEach((x) => x.classList.remove('active'));
         b.classList.add('active');
-        localStorage.clear(); // reset de sesión/mensajes mock para ver el form de nuevo
+        localStorage.clear(); // reset de sesión/mensajes para ver el form de nuevo
         loadWidget(b.dataset.theme);
       });
     });

@@ -11,7 +11,7 @@
  *     footer "powered by", responsive full-screen en mobile.
  *   - CARDS DE VEHÍCULOS: carousel + card expandida con specs y CTAs. La UI está
  *     lista; se alimenta de `vehicles` que el backend devolverá junto a `output`
- *     (todavía no lo hace → hoy se ve vía mock).
+ *     (todavía no lo hace → el gateway lee la respuesta de n8n como String).
  *   - Aislamiento de estilos con escudo `all: initial` (probado con reCAPTCHA).
  *
  *  API del gateway (widget-gateway):
@@ -28,12 +28,12 @@
   const embed = (typeof window !== 'undefined' && window.ChatWidgetConfig) || {};
   const CLIENT_ID = embed.clientId || 'clientTest';
   const GATEWAY_URL = (embed.gatewayUrl || 'http://localhost:8080').replace(/\/$/, '');
-  const MOCK = embed.mock === true; // demo/preview sin backend
 
   const API = {
     config: `${GATEWAY_URL}/api/v2/config/${encodeURIComponent(CLIENT_ID)}`,
     login: `${GATEWAY_URL}/api/v2/widget/lead/login`,
     chat: `${GATEWAY_URL}/api/v2/widget/lead/chat`,
+    voice: `${GATEWAY_URL}/api/v2/widget/lead/voice`,
     ping: `${GATEWAY_URL}/api/v2/widget/lead/login/ping`,
   };
 
@@ -90,10 +90,11 @@
       emailError: 'Ingresá un email válido',
       phoneError: 'Ingresá un teléfono válido',
       captchaError: 'Completá el reCAPTCHA',
-      privacy: 'Al continuar aceptás ser contactado. Protegido por reCAPTCHA.',
+      privacy: 'Al continuar aceptás ser contactado.',
+      recaptchaNotice: 'Protegido por reCAPTCHA.',   // solo se muestra si el client usa captcha
       starting: 'Iniciando...',
-      // aria-labels
-      minimizeAria: 'Minimizar', sendAria: 'Enviar', micAria: 'Grabar',
+      // aria-labels / navegación
+      minimizeAria: 'Minimizar', sendAria: 'Enviar', micAria: 'Grabar', back: 'Volver',
       // cards de vehículos
       vinLabel: 'VIN', stockLabel: 'Stock #', priceLabel: 'Precio',
       vDetail: 'Ver detalle', vSelect: 'Me interesa',
@@ -146,59 +147,47 @@
     droplet: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 6.5 8a7 7 0 1 0 11 0z"/></svg>',
     gear: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 8.5v7a2 2 0 0 0 2 2h7"/></svg>',
     fuel: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h12V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/><path d="M15 9h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V8l-3-3"/><path d="M3 10h12"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
   };
   const SPEC_ICON = {
     'body type': ICONS.body, 'tipo': ICONS.body,
-    'mileage': ICONS.gauge, 'kilometraje': ICONS.gauge,
+    'mileage': ICONS.gauge, 'kilometraje': ICONS.gauge, 'kilómetros': ICONS.gauge, 'kilometros': ICONS.gauge, 'km': ICONS.gauge,
+    'year': ICONS.calendar, 'año': ICONS.calendar, 'ano': ICONS.calendar,
     'exterior color': ICONS.palette, 'color exterior': ICONS.palette,
     'interior color': ICONS.droplet, 'color interior': ICONS.droplet,
-    'transmission': ICONS.gear, 'transmisión': ICONS.gear,
+    'transmission': ICONS.gear, 'transmisión': ICONS.gear, 'transmision': ICONS.gear,
     'fuel type': ICONS.fuel, 'combustible': ICONS.fuel,
   };
 
-  /* ---------------------------------------------------------- mock backend */
-  const MOCK_VEHICLES = [
-    {
-      image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80',
-      vin: '2HKRS4H56TH111234', stock: 'CR2T49',
-      title: 'New 2026 Honda CR-V EX-L Hybrid', price: '$47,021',
-      url: '#',
-      specs: { 'Body type': 'Sport utility', 'Mileage': '6 km', 'Exterior color': 'Canyon river blue', 'Interior color': 'Black w/ orange stitching', 'Transmission': 'Automatic', 'Fuel type': 'Hybrid' },
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80',
-      vin: '2HGFE1F50N9001122', stock: 'HI812',
-      title: 'Used 2024 Honda Civic Sport', price: '$31,480',
-      url: '#',
-      specs: { 'Body type': 'Sedan', 'Mileage': '18.400 km', 'Exterior color': 'Sonic gray', 'Interior color': 'Black', 'Transmission': 'CVT', 'Fuel type': 'Gasoline' },
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1571607388263-1044f9ea01dd?w=600&q=80',
-      vin: '5FNYF6H01NB005566', stock: 'PL329',
-      title: 'New 2026 Honda Pilot TrailSport', price: '$52,346',
-      url: '#',
-      specs: { 'Body type': 'SUV', 'Mileage': '12 km', 'Exterior color': 'Diffused sky blue', 'Interior color': 'Gray leather', 'Transmission': 'Automatic', 'Fuel type': 'Gasoline' },
-    },
+  // Specs que se muestran (compactas, con icono) en la card del carousel — lo que le interesa
+  // al comprador de un vistazo. Orden = prioridad; se muestran las primeras 3 que existan.
+  const CARD_STAT_GROUPS = [
+    ['mileage', 'kilometraje', 'kilómetros', 'kilometros', 'km'],
+    ['year', 'año', 'ano'],
+    ['fuel type', 'combustible'],
+    ['transmission', 'transmisión', 'transmision'],
   ];
-  const mockReply = (text) => new Promise((res) => setTimeout(() => {
-    const t = text.toLowerCase();
-    if (/invent|veh|auto|car|camion|suv|modelo|comprar|ver/.test(t)) {
-      res({ output: 'Encontré algunas opciones que te pueden interesar 👇', vehicles: MOCK_VEHICLES });
-    } else {
-      res({ output: 'Gracias por tu mensaje. Un asesor puede ayudarte con eso — ¿querés que te muestre el inventario disponible?' });
+  const cardStats = (specs) => {
+    const keys = Object.keys(specs || {});
+    const out = [];
+    for (const group of CARD_STAT_GROUPS) {
+      if (out.length >= 3) break;
+      const realKey = keys.find((k) => group.includes(k.toLowerCase().trim()));
+      if (realKey && specs[realKey]) {
+        out.push({ icon: SPEC_ICON[realKey.toLowerCase().trim()] || ICONS.gauge, value: String(specs[realKey]) });
+      }
     }
-  }, 650 + Math.random() * 500));
+    return out;
+  };
 
   /* ============================================================== BOOT ==== */
   onReady(async () => {
     // 1) Traer config del backend y mergear: DEFAULTS < backend < embed
     let backendConfig = {};
-    if (!MOCK) {
-      try {
-        const r = await fetch(API.config, { method: 'GET' });
-        if (r.ok) backendConfig = await r.json();
-      } catch (_) { /* sin config → defaults */ }
-    }
+    try {
+      const r = await fetch(API.config, { method: 'GET' });
+      if (r.ok) backendConfig = await r.json();
+    } catch (_) { /* sin config → defaults */ }
     const cfg = Object.assign({}, DEFAULTS, backendConfig, embed.overrides || {});
     // el objeto `text` se mergea aparte (Object.assign es shallow → si no, un `text`
     // parcial del backend borraría los demás labels).
@@ -351,24 +340,39 @@
     .lhw-quick button:hover { background: color-mix(in srgb, var(--brand) 18%, #fff); }
 
     /* ------------------------------------------------- cards de vehículos */
-    .lhw-vcards { align-self: stretch; margin: 2px 0; }
-    .lhw-vscroll { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 2px 8px; scrollbar-width: none; }
+    .lhw-vcards { align-self: stretch; margin: 2px 0; position: relative; }
+    .lhw-vscroll { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 2px 2px 8px; scrollbar-width: none; }
     .lhw-vscroll::-webkit-scrollbar { display: none; }
+    /* flechas: solo desktop con mouse (pointer fino) y si hay overflow. En touch → swipe con el dedo. */
+    .lhw-varrow { position: absolute; top: 60px; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%;
+      background: #fff; color: var(--brand); box-shadow: 0 2px 8px rgba(0,0,0,.22); display: none; align-items: center; justify-content: center; z-index: 2; transition: opacity .2s; }
+    .lhw-varrow:hover { background: #f8fafc; }
+    .lhw-varrow[disabled] { opacity: .3; pointer-events: none; }
+    .lhw-varrow.prev { left: 4px; } .lhw-varrow.next { right: 4px; }
+    @media (hover: hover) and (pointer: fine) { .lhw-vcards.scrollable .lhw-varrow { display: flex; } }
     .lhw-vcard { flex: 0 0 200px; scroll-snap-align: start; background: #fff; border: 1px solid #e9edf3; border-radius: 16px; overflow: hidden;
       box-shadow: 0 2px 8px -2px rgba(0,0,0,.08); display: flex; flex-direction: column; }
     .lhw-vimg { width: 100%; height: 116px; object-fit: cover; background: #eef2f7; }
     .lhw-vbody { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
     .lhw-vmeta { font-size: 11px; color: #94a3b8; line-height: 1.5; }
     .lhw-vtitle { font-size: 14px; font-weight: 700; color: #0f172a; line-height: 1.25; margin: 3px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .lhw-vstats { display: flex; flex-wrap: wrap; gap: 5px 10px; margin: 5px 0 6px; }
+    .lhw-vstat { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #64748b; line-height: 1.2; }
+    .lhw-vstat svg { width: 13px; height: 13px; color: #94a3b8; flex-shrink: 0; }
     .lhw-vprice { font-size: 17px; font-weight: 800; color: var(--brand); }
     .lhw-vbtns { display: flex; flex-direction: column; border-top: 1px solid #eef2f7; }
     .lhw-vbtn { padding: 10px; font-size: 13px; font-weight: 700; text-align: center; color: var(--brand); transition: background .15s; }
     .lhw-vbtn:hover { background: color-mix(in srgb, var(--brand) 8%, #fff); }
     .lhw-vbtn.sel { border-top: 1px solid #eef2f7; }
 
-    /* ----------------------------------------- card expandida de vehículo */
-    .lhw-vdetail { align-self: stretch; background: #fff; border: 1px solid #e9edf3; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 16px -4px rgba(0,0,0,.12); animation: lhw-in .3s ease; }
-    .lhw-vdetail img { width: 100%; height: 150px; object-fit: cover; }
+    /* ------------------------------ detalle de vehículo: sheet deslizante */
+    .lhw-sheet { position: absolute; inset: 0; background: var(--bg); z-index: 6; display: flex; flex-direction: column;
+      transform: translateY(100%); transition: transform .32s cubic-bezier(.16,1,.3,1); }
+    .lhw-sheet.open { transform: translateY(0); }
+    .lhw-sheet-head { padding: 10px 12px; border-bottom: 1px solid #eef2f7; flex-shrink: 0; background: var(--bg); }
+    .lhw-sheet-back { display: inline-flex; align-items: center; gap: 2px; color: var(--brand); font-weight: 700; font-size: 14px; padding: 4px 6px; }
+    .lhw-sheet-body { flex: 1; overflow-y: auto; }
+    .lhw-sheet-img { width: 100%; height: 170px; object-fit: cover; background: #eef2f7; }
     .lhw-vd-body { padding: 14px 16px 16px; }
     .lhw-vd-meta { font-size: 11.5px; color: #94a3b8; text-align: center; line-height: 1.6; }
     .lhw-vd-title { font-size: 17px; font-weight: 800; color: #0f172a; text-align: center; margin: 6px 0 12px; }
@@ -533,7 +537,7 @@
     if (els.mic) els.mic.addEventListener('click', () => this.toggleMic());
 
     // reCAPTCHA (si el client tiene site key). Se renderiza cuando cargue el script de Google.
-    if (this.cfg.recaptchaSiteKey && !MOCK) this.loadRecaptcha();
+    if (this.cfg.recaptchaSiteKey) this.loadRecaptcha();
   };
 
   /* ---- abrir / cerrar --------------------------------------------------- */
@@ -548,7 +552,6 @@
 
   /* ---- sesión: ping para saber si seguimos logueados -------------------- */
   Widget.prototype.ping = function () {
-    if (MOCK) { if (this.sessionId) this.showChat(); else this.showForm(); return; }
     if (!this.sessionId) { this.showForm(); return; }
     fetch(API.ping, { method: 'GET', headers: { 'x-session-id': this.sessionId } })
       .then((r) => { r.ok ? this.showChat() : this.resetSession(); })
@@ -603,7 +606,7 @@
     if (!name.value.trim()) { showErr('name'); name.classList.add('err'); ok = false; }
     if (!emailOk) { showErr('email'); email.classList.add('err'); ok = false; }
     if (!phone.value.trim()) { showErr('phone'); phone.classList.add('err'); ok = false; }
-    if (cfg.recaptchaSiteKey && !captcha && !MOCK) { showErr('form', t.captchaError); ok = false; }
+    if (cfg.recaptchaSiteKey && !captcha) { showErr('form', t.captchaError); ok = false; }
     if (!ok) return;
 
     const btn = els.form.querySelector('.lhw-submit');
@@ -611,8 +614,6 @@
     const restore = () => { btn.disabled = false; btn.textContent = cfg.startButtonText; };
 
     const payload = { contact_name: name.value.trim(), email: email.value.trim(), phone_number: phone.value.trim() };
-
-    if (MOCK) { this.sessionId = 'mock-session'; localStorage.setItem(LS_SESSION, this.sessionId); restore(); this.showChat(); return; }
 
     fetch(API.login, {
       method: 'POST',
@@ -647,13 +648,38 @@
     this.busy = true;
 
     const done = () => { this.busy = false; };
-    const req = MOCK
-      ? mockReply(text)
-      : fetch(API.chat, {
+    const req = fetch(API.chat, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId },
           body: JSON.stringify({ message: text }),
         }).then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, tx)); }); return r.json(); });
+
+    req
+      .then((data) => { typing.remove(); this.addBot(data.output || tx.botFallback, data.vehicles); })
+      .catch((err) => { typing.remove(); this.addBot(err.message || tx.errGeneric); })
+      .finally(done);
+  };
+
+  /* ---- nota de voz → backend (/voice), mismo flujo que un mensaje ------- */
+  Widget.prototype.sendVoice = function (blob) {
+    if (this.busy) return;
+    const tx = this.cfg.text;
+    const typing = this.showTyping();
+    this.busy = true;
+    const done = () => { this.busy = false; };
+
+    const toB64 = new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onloadend = () => resolve(String(r.result).split(',')[1]);
+      r.onerror = reject;
+      r.readAsDataURL(blob);
+    });
+
+    const req = toB64.then((audio) => fetch(API.voice, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId },
+          body: JSON.stringify({ audio }),
+        }).then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, tx)); }); return r.json(); }));
 
     req
       .then((data) => { typing.remove(); this.addBot(data.output || tx.botFallback, data.vehicles); })
@@ -705,46 +731,82 @@
     const scroll = h('div', 'lhw-vscroll');
     vehicles.forEach((v) => {
       const card = h('div', 'lhw-vcard');
+      const stats = cardStats(v.specs).map((s) =>
+        `<span class="lhw-vstat">${s.icon}${esc(s.value)}</span>`).join('');
       card.innerHTML = `
         <img class="lhw-vimg" src="${esc(v.image || '')}" alt="${esc(v.title || '')}" loading="lazy">
         <div class="lhw-vbody">
-          <div class="lhw-vmeta">${v.vin ? esc(t.vinLabel) + ': ' + esc(String(v.vin).slice(0, 12)) + '…' : ''}${v.stock ? '<br>' + esc(t.stockLabel) + ': ' + esc(v.stock) : ''}</div>
+          <div class="lhw-vmeta">${v.stock ? esc(t.stockLabel) + ': ' + esc(v.stock) : ''}</div>
           <div class="lhw-vtitle">${esc(v.title || '')}</div>
+          ${stats ? `<div class="lhw-vstats">${stats}</div>` : ''}
           <div class="lhw-vprice">${esc(v.price || '')}</div>
         </div>
         <div class="lhw-vbtns">
           <div class="lhw-vbtn det">${esc(t.vDetail)}</div>
           <div class="lhw-vbtn sel">${esc(t.vSelect)}</div>
         </div>`;
-      card.querySelector('.det').addEventListener('click', () => this.printVehicleDetail(v));
+      card.querySelector('.det').addEventListener('click', () => this.openVehicleDetail(v));
       card.querySelector('.sel').addEventListener('click', () => this.send(`${t.vInterested} ${v.title}`));
       scroll.appendChild(card);
     });
     wrap.appendChild(scroll);
+
+    // Flechas de navegación (se muestran solo en desktop-mouse y si hay overflow; ver CSS).
+    const prev = h('button', 'lhw-varrow prev', ICONS.chevronL);
+    const next = h('button', 'lhw-varrow next', ICONS.chevronR);
+    prev.setAttribute('aria-label', 'Anterior'); next.setAttribute('aria-label', 'Siguiente');
+    wrap.appendChild(prev); wrap.appendChild(next);
+
+    const step = () => { const c = scroll.querySelector('.lhw-vcard'); return c ? c.offsetWidth + 12 : 212; };
+    prev.addEventListener('click', () => scroll.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => scroll.scrollBy({ left: step(), behavior: 'smooth' }));
+    const update = () => {
+      wrap.classList.toggle('scrollable', scroll.scrollWidth - scroll.clientWidth > 2);
+      prev.disabled = scroll.scrollLeft <= 1;
+      next.disabled = scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 1;
+    };
+    scroll.addEventListener('scroll', update);
+
     this.els.msgs.appendChild(wrap);
     this.scroll();
+    update();
+    setTimeout(update, 400); // recomputar cuando cargan las imágenes (cambia el scrollWidth)
   };
 
-  Widget.prototype.printVehicleDetail = function (v) {
+  Widget.prototype.openVehicleDetail = function (v) {
     const t = this.cfg.text;
+    // uno solo a la vez: si hay un detalle abierto, lo saco (no se apilan)
+    const existing = this.els.panel.querySelector('.lhw-sheet');
+    if (existing) existing.remove();
+
     const specs = v.specs || {};
     const rows = Object.keys(specs).map((k) => {
       const ic = SPEC_ICON[k.toLowerCase()] || ICONS.body;
       return `<div class="lhw-spec"><span class="ic">${ic}</span><span><span class="lhw-spec-l">${esc(k)}</span><br><span class="lhw-spec-v">${esc(specs[k])}</span></span></div>`;
     }).join('');
-    const card = h('div', 'lhw-vdetail');
-    card.innerHTML = `
-      <img src="${esc(v.image || '')}" alt="${esc(v.title || '')}">
-      <div class="lhw-vd-body">
-        <div class="lhw-vd-meta">${v.vin ? esc(t.vinLabel) + ': ' + esc(v.vin) : ''}${v.stock ? ' · ' + esc(t.stockLabel) + ': ' + esc(v.stock) : ''}</div>
-        <div class="lhw-vd-title">${esc(v.title || '')}</div>
-        <div class="lhw-specs">${rows}</div>
-        <div class="lhw-vd-price"><small>${esc(t.priceLabel)}</small>${esc(v.price || '')}</div>
-        <a class="lhw-cta primary" href="${esc((v.ctaPrimary && v.ctaPrimary.url) || v.url || '#')}" target="_blank" rel="noopener">${esc((v.ctaPrimary && v.ctaPrimary.label) || t.ctaPrimary)}</a>
-        <a class="lhw-cta ghost" href="${esc((v.ctaSecondary && v.ctaSecondary.url) || v.url || '#')}" target="_blank" rel="noopener">${esc((v.ctaSecondary && v.ctaSecondary.label) || t.ctaSecondary)}</a>
+
+    const sheet = h('div', 'lhw-sheet');
+    sheet.innerHTML = `
+      <div class="lhw-sheet-head">
+        <button class="lhw-sheet-back" aria-label="${esc(t.back)}">${ICONS.chevronL}<span>${esc(t.back)}</span></button>
+      </div>
+      <div class="lhw-sheet-body">
+        <img class="lhw-sheet-img" src="${esc(v.image || '')}" alt="${esc(v.title || '')}">
+        <div class="lhw-vd-body">
+          <div class="lhw-vd-meta">${v.vin ? esc(t.vinLabel) + ': ' + esc(v.vin) : ''}${v.stock ? ' · ' + esc(t.stockLabel) + ': ' + esc(v.stock) : ''}</div>
+          <div class="lhw-vd-title">${esc(v.title || '')}</div>
+          <div class="lhw-specs">${rows}</div>
+          <div class="lhw-vd-price"><small>${esc(t.priceLabel)}</small>${esc(v.price || '')}</div>
+          <a class="lhw-cta primary" href="${esc((v.ctaPrimary && v.ctaPrimary.url) || v.url || '#')}" target="_blank" rel="noopener">${esc((v.ctaPrimary && v.ctaPrimary.label) || t.ctaPrimary)}</a>
+          <a class="lhw-cta ghost" href="${esc((v.ctaSecondary && v.ctaSecondary.url) || v.url || '#')}" target="_blank" rel="noopener">${esc((v.ctaSecondary && v.ctaSecondary.label) || t.ctaSecondary)}</a>
+        </div>
       </div>`;
-    this.els.msgs.appendChild(card);
-    this.scroll();
+    sheet.querySelector('.lhw-sheet-back').addEventListener('click', () => {
+      sheet.classList.remove('open');
+      setTimeout(() => sheet.remove(), 320);
+    });
+    this.els.panel.appendChild(sheet);
+    requestAnimationFrame(() => sheet.classList.add('open')); // dispara el slide-in
   };
 
   /* ---- nota de voz reproducible (in-session) ---------------------------- */
@@ -802,7 +864,7 @@
         btn.classList.remove('rec'); btn.innerHTML = ICONS.mic;
         const blob = new Blob(this.chunks, { type: 'audio/webm' });
         this.printAudio(URL.createObjectURL(blob)); // burbuja de voz reproducible (in-session)
-        // TODO: POST /voice cuando el gateway soporte audio (transcribir/responder)
+        this.sendVoice(blob);                        // + manda el audio al gateway (/voice)
       };
       this.recorder.start(); btn.classList.add('rec');
     }).catch(() => {});

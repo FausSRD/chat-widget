@@ -12,15 +12,16 @@ Widget de captación de leads con **cuestionario + chat**, embebible en cualquie
 | Archivo | Qué es |
 |---|---|
 | `chat-widget.js` | El widget (IIFE autocontenido). Es lo que se embebe en el sitio del cliente. |
-| `index.html` | Demo **mock** (sin backend) para previsualizar diseño + cards. Abrilo en el navegador. |
+| `index.html` | Demo con selector de temas (aplica `overrides`). Necesita el gateway levantado. |
+| `index2.html` | Ejemplo de embed real (snippet tal cual lo pega un cliente). |
 | `README.md` | Esto. |
 
 ## Previsualizar (local)
 
-Abrí `index.html` en el navegador (o servílo con cualquier static server). Está en **modo mock**:
-completá el cuestionario (entra cualquier dato) y escribí `ver inventario` (o tocá el quick reply)
-para ver las **cards de vehículos** y la **card expandida con specs**. El selector de temas de arriba
-muestra el nivel de customización que en producción sirve el backend.
+Serví la carpeta y abrí `index.html` o `index2.html`. **Necesitan el widget-gateway levantado**
+(`localhost:8080`) y el client `clientTest` activo. Completá el cuestionario y chateá contra el backend
+real. El selector de temas de `index.html` aplica `overrides` sobre la config del backend, para ver el
+nivel de customización.
 
 ## Embed en producción
 
@@ -46,7 +47,6 @@ el sitio donde se embebe tiene que coincidir con el `host` del client en la DB.
 |---|---|---|
 | `clientId` | sí | Slug del client. Se usa para pedir la config y como namespace de `localStorage`. |
 | `gatewayUrl` | sí | URL base del widget-gateway (sin barra final). |
-| `mock` | no | `true` = demo sin backend (respuestas canned, incluye vehicles). |
 | `overrides` | no | Objeto que pisa la config del backend (dev/preview). En prod no se usa. |
 
 Merge de config: `DEFAULTS < widget_config (backend) < overrides (embed)`.
@@ -104,7 +104,8 @@ puede mandar un `text` **parcial**: se mergea con los defaults (no hace falta ma
   "phoneLabel": "Phone", "phonePlaceholder": "+1 555 555 5555",
   "nameError": "Enter your name", "emailError": "Enter a valid email",
   "phoneError": "Enter a valid phone", "captchaError": "Complete the reCAPTCHA",
-  "privacy": "By continuing you agree to be contacted. Protected by reCAPTCHA.",
+  "privacy": "By continuing you agree to be contacted.",
+  "recaptchaNotice": "Protected by reCAPTCHA.",   // solo se muestra si el client usa captcha
   "starting": "Starting...",
   "minimizeAria": "Minimize", "sendAria": "Send", "micAria": "Record",
   "vinLabel": "VIN", "stockLabel": "Stock #", "priceLabel": "Price",
@@ -135,15 +136,18 @@ puede mandar un `text` **parcial**: se mergea con los defaults (no hace falta ma
 | `GET` | `/api/v2/config/{clientId}` | — | — | `widget_config` (JSON) |
 | `POST` | `/api/v2/widget/lead/login` | `x-captcha-token` | `{contact_name, email, phone_number}` | `{session_id}` |
 | `POST` | `/api/v2/widget/lead/chat` | `x-session-id` | `{message}` | `{output, vehicles?}` |
+| `POST` | `/api/v2/widget/lead/voice` | `x-session-id` | `{audio}` (base64) | `{output}` |
 | `GET` | `/api/v2/widget/lead/login/ping` | `x-session-id` | — | `200` \| `403` |
 
 Errores: `{code, message, status}`. Códigos mapeados a mensajes de usuario: `SESSION_NOT_FOUND`,
 `SESSION_CLIENT_INVALID`, `MAX_SESSION_COUNT_REACHED`, `ORIGIN_NOT_ALLOWED`, `CAPTCHA_INVALID`.
 
-### Cards de vehículos (contrato FUTURO)
+### Cards de vehículos (contrato)
 
-> ⚠️ **Todavía no implementado en el backend.** Hoy las cards solo se ven en modo mock. La UI ya está
-> lista: cuando el `/chat` devuelva un array `vehicles` junto al `output`, se renderiza solo.
+> ✅ **Implementado end-to-end.** Si n8n devuelve JSON `{output, vehicles}`, el gateway lo parsea
+> (`ChatResponseConverter`) y reenvía `vehicles` tal cual (passthrough, no modela el schema); si devuelve
+> texto plano → solo `output`, sin cards (compat). El widget renderiza el carousel y el detalle solos.
+> Falta solo que el n8n **real** arme ese JSON (probable en modo mock con el toggle de `mock-n8n.js`).
 
 ```jsonc
 // Respuesta esperada de POST /lead/chat cuando aplique:
@@ -157,7 +161,8 @@ Errores: `{code, message, status}`. Códigos mapeados a mensajes de usuario: `SE
       "title": "New 2026 Honda CR-V EX-L Hybrid",
       "price": "$47,021",
       "url": "https://dealer.com/vehiculo/123",
-      "specs": {                         // para la card expandida
+      "specs": {                         // se muestran en el detalle; la card surfacea un subset
+        "Year": "2026",
         "Body type": "Sport utility",
         "Mileage": "6 km",
         "Exterior color": "Canyon river blue",
@@ -172,8 +177,10 @@ Errores: `{code, message, status}`. Códigos mapeados a mensajes de usuario: `SE
 }
 ```
 
-Las claves de `specs` matchean íconos (Body type, Mileage, Exterior/Interior color, Transmission,
-Fuel type — en inglés o español); las que no matchean usan un ícono default.
+Las claves de `specs` matchean íconos (Year, Body type, Mileage/Kilometraje, Exterior/Interior color,
+Transmission, Fuel type — en inglés o español); las que no matchean usan un ícono default. **La card del
+carousel muestra hasta 3** de esos specs por prioridad (km → año → combustible → transmisión); **el detalle
+muestra todos**.
 
 ## Notas
 
