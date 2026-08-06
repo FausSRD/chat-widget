@@ -359,7 +359,7 @@
     .lhw-vstats { display: flex; flex-wrap: wrap; gap: 5px 10px; margin: 5px 0 6px; }
     .lhw-vstat { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: #64748b; line-height: 1.2; }
     .lhw-vstat svg { width: 13px; height: 13px; color: #94a3b8; flex-shrink: 0; }
-    .lhw-vprice { font-size: 17px; font-weight: 800; color: var(--brand); }
+    .lhw-vprice { font-size: 17px; font-weight: 800; color: var(--brand); text-align: center; }
     .lhw-vbtns { display: flex; flex-direction: column; border-top: 1px solid #eef2f7; }
     .lhw-vbtn { padding: 10px; font-size: 13px; font-weight: 700; text-align: center; color: var(--brand); transition: background .15s; }
     .lhw-vbtn:hover { background: color-mix(in srgb, var(--brand) 8%, #fff); }
