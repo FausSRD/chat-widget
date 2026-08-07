@@ -276,7 +276,7 @@
 
     /* ------------------------------------------------------------- panel */
     .lhw-panel {
-      position: fixed; bottom: 96px; right: 22px; width: 384px; height: min(620px, calc(100vh - 120px));
+      position: fixed; bottom: 96px; right: 22px; width: 384px; height: 620px; max-height: calc(100% - 120px);
       background: var(--bg); border-radius: var(--radius); box-shadow: var(--shadow);
       display: flex; flex-direction: column; overflow: hidden; opacity: 0;
       transform: translateY(16px) scale(.98); transform-origin: bottom right; pointer-events: none;
@@ -411,8 +411,8 @@
     .lhw-footer a { color: #94a3b8; text-decoration: underline; }
 
     /* ------------------------------------------------------------ mobile */
-    @media (max-width: 480px) {
-      .lhw-panel { width: 100vw; height: 100dvh; bottom: 0; right: 0; border-radius: 0; }
+    @media (max-width: 600px) {
+      .lhw-panel { width: 100%; height: 100%; max-height: none; bottom: 0; right: 0; border-radius: 0; }
       .lhw-hint { display: none; }
     }
     `;
