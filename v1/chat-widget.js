@@ -243,6 +243,8 @@
       color: #fff; background: linear-gradient(140deg, var(--brand), var(--brand-dark));
       box-shadow: 0 8px 24px -6px rgba(0,0,0,.4); transition: transform .25s ease, box-shadow .25s ease;
       z-index: 2147483000;
+      /* estabiliza el fixed en mobile (iOS repinta suave en su propia capa GPU) */
+      will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden;
     }
     .lhw-launcher:hover { transform: scale(1.07); box-shadow: 0 12px 30px -6px rgba(0,0,0,.45); }
     .lhw-launcher:active { transform: scale(.98); }
