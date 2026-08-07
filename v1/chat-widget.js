@@ -412,7 +412,10 @@
 
     /* ------------------------------------------------------------ mobile */
     @media (max-width: 600px) {
-      .lhw-panel { width: 100%; height: 100%; max-height: none; bottom: 0; right: 0; border-radius: 0; }
+      /* Full-screen en mobile. height: 100dvh es la ÚNICA unidad especial del widget:
+         se ajusta a la barra del navegador móvil (que 100% no puede). El 100% queda de
+         fallback para navegadores viejos sin soporte de dvh. */
+      .lhw-panel { width: 100%; height: 100%; height: 100dvh; max-height: none; bottom: 0; right: 0; border-radius: 0; }
       .lhw-hint { display: none; }
     }
     `;

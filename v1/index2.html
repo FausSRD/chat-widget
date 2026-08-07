@@ -6,50 +6,142 @@
   <title>AutoPlanet — Concesionaria</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #0f172a; }
-    header { background: #0f172a; color: #fff; padding: 18px 28px; display: flex; align-items: center; gap: 20px; }
-    header .logo { font-size: 20px; font-weight: 800; }
-    header nav { margin-left: auto; display: flex; gap: 22px; font-size: 14px; opacity: .85; }
-    .hero { padding: 80px 28px; text-align: center; background: linear-gradient(120deg, #1e293b, #334155); color: #fff; }
-    .hero h1 { font-size: 40px; font-weight: 800; }
-    .hero p { margin-top: 12px; font-size: 18px; opacity: .85; }
-    .content { max-width: 900px; margin: 0 auto; padding: 60px 28px; line-height: 1.7; color: #334155; }
-    .content h2 { color: #0f172a; margin-bottom: 12px; }
-    footer { background: #f1f5f9; padding: 28px; text-align: center; color: #94a3b8; font-size: 13px; }
+    html, body { overflow-x: hidden; }          /* nunca scroll horizontal */
+    body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #0f172a; line-height: 1.6; }
+    img { max-width: 100%; display: block; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+    /* header */
+    header { background: #0f172a; color: #fff; position: sticky; top: 0; z-index: 10; }
+    .header-in { display: flex; align-items: center; gap: 16px; height: 60px; }
+    .logo { font-size: 20px; font-weight: 800; }
+    .logo span { color: #38bdf8; }
+    nav { margin-left: auto; display: flex; gap: 22px; font-size: 14px; font-weight: 600; color: #cbd5e1; }
+    nav a { color: inherit; text-decoration: none; }
+    .cta-top { background: #38bdf8; color: #0f172a; padding: 8px 16px; border-radius: 8px; }
+    @media (max-width: 640px) { nav { display: none; } }   /* en mobile ocultamos el menú (demo) */
+
+    /* hero */
+    .hero { background: linear-gradient(120deg, #1e293b, #334155); color: #fff; padding: 72px 0; }
+    .hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; max-width: 640px; }
+    .hero p { margin-top: 14px; font-size: 18px; opacity: .9; max-width: 520px; }
+    .hero .btn { display: inline-block; margin-top: 26px; background: #38bdf8; color: #0f172a; padding: 13px 26px; border-radius: 10px; font-weight: 700; text-decoration: none; }
+    @media (max-width: 640px) { .hero { padding: 48px 0; } .hero h1 { font-size: 30px; } .hero p { font-size: 16px; } }
+
+    /* secciones */
+    section { padding: 56px 0; }
+    section:nth-child(even) { background: #f8fafc; }
+    h2 { font-size: 28px; font-weight: 800; letter-spacing: -.01em; }
+    .lead { margin-top: 8px; color: #475569; max-width: 640px; }
+    @media (max-width: 640px) { h2 { font-size: 23px; } }
+
+    /* grid de autos */
+    .cars { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 860px) { .cars { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .cars { grid-template-columns: 1fr; } }
+    .car { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+    .car img { height: 180px; width: 100%; object-fit: cover; }
+    .car-b { padding: 14px 16px; }
+    .car-b h3 { font-size: 16px; font-weight: 700; }
+    .car-b .price { margin-top: 6px; font-size: 20px; font-weight: 800; color: #0ea5e9; }
+    .car-b .meta { margin-top: 4px; font-size: 13px; color: #94a3b8; }
+
+    /* features */
+    .feats { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 700px) { .feats { grid-template-columns: 1fr; } }
+    .feat { padding: 22px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; }
+    .feat .ic { width: 44px; height: 44px; border-radius: 12px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .feat h3 { margin-top: 14px; font-size: 18px; font-weight: 700; }
+    .feat p { margin-top: 6px; color: #64748b; font-size: 15px; }
+
+    /* testimonios */
+    .quotes { margin-top: 28px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    @media (max-width: 700px) { .quotes { grid-template-columns: 1fr; } }
+    .quote { padding: 22px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; font-style: italic; color: #334155; }
+    .quote .who { margin-top: 12px; font-style: normal; font-weight: 700; color: #0f172a; }
+
+    footer { background: #0f172a; color: #94a3b8; padding: 40px 0; font-size: 14px; }
+    footer a { color: #cbd5e1; }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">Auto<span style="color:#38bdf8">Planet</span></div>
-    <nav><span>Nuevos</span><span>Usados</span><span>Financiación</span><span>Contacto</span></nav>
+    <div class="wrap header-in">
+      <div class="logo">Auto<span>Planet</span></div>
+      <nav>
+        <a href="#">Nuevos</a><a href="#">Usados</a><a href="#">Financiación</a>
+        <a href="#">Contacto</a><a href="#" class="cta-top">Reservar</a>
+      </nav>
+    </div>
   </header>
 
-  <section class="hero">
-    <h1>Tu próximo auto te está esperando</h1>
-    <p>Más de 200 vehículos nuevos y usados con financiación a medida.</p>
+  <div class="hero">
+    <div class="wrap">
+      <h1>Tu próximo auto te está esperando</h1>
+      <p>Más de 200 vehículos nuevos y usados con financiación a medida. Preguntale a nuestro asistente y te ayuda a elegir.</p>
+      <a class="btn" href="#">Ver inventario</a>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <h2>Destacados de la semana</h2>
+      <p class="lead">Una selección de nuestros modelos más buscados, listos para entrega inmediata.</p>
+      <div class="cars">
+        <div class="car"><img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80" alt=""><div class="car-b"><h3>Honda CR-V EX-L 2026</h3><div class="price">$47.021</div><div class="meta">6 km · Automático · Híbrido</div></div></div>
+        <div class="car"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80" alt=""><div class="car-b"><h3>Honda Civic Sport 2024</h3><div class="price">$31.480</div><div class="meta">18.400 km · CVT · Nafta</div></div></div>
+        <div class="car"><img src="https://images.unsplash.com/photo-1571607388263-1044f9ea01dd?w=600&q=80" alt=""><div class="car-b"><h3>Honda Pilot TrailSport 2026</h3><div class="price">$52.346</div><div class="meta">12 km · Automático · Nafta</div></div></div>
+        <div class="car"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80" alt=""><div class="car-b"><h3>Ford Mustang GT 2023</h3><div class="price">$61.900</div><div class="meta">9.200 km · Manual · Nafta</div></div></div>
+        <div class="car"><img src="https://images.unsplash.com/photo-1550355291-bbee04a92027?w=600&q=80" alt=""><div class="car-b"><h3>BMW Serie 3 2025</h3><div class="price">$54.200</div><div class="meta">2.100 km · Automático · Nafta</div></div></div>
+        <div class="car"><img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" alt=""><div class="car-b"><h3>Toyota Hilux SRX 2024</h3><div class="price">$45.700</div><div class="meta">14.000 km · Automático · Diésel</div></div></div>
+      </div>
+    </div>
   </section>
 
-  <section class="content">
-    <h2>Sobre nosotros</h2>
-    <p>Somos una concesionaria con más de 20 años de trayectoria. Página de ejemplo para probar
-       el chat widget embebido tal cual lo cargaría un cliente real en su sitio. El chat aparece
-       abajo a la derecha.</p>
+  <section>
+    <div class="wrap">
+      <h2>¿Por qué AutoPlanet?</h2>
+      <p class="lead">20 años acompañando a cada cliente en la compra de su vehículo.</p>
+      <div class="feats">
+        <div class="feat"><div class="ic">🛡️</div><h3>Garantía extendida</h3><p>Todos nuestros usados con revisión de 150 puntos y garantía de hasta 3 años.</p></div>
+        <div class="feat"><div class="ic">💳</div><h3>Financiación flexible</h3><p>Planes a tu medida, aprobación rápida y sin sorpresas en la letra chica.</p></div>
+        <div class="feat"><div class="ic">🚗</div><h3>Entrega inmediata</h3><p>Más de 200 unidades en stock, listas para que te las lleves hoy mismo.</p></div>
+      </div>
+    </div>
   </section>
 
-  <footer>© 2026 AutoPlanet — Página de ejemplo</footer>
+  <section>
+    <div class="wrap">
+      <h2>Lo que dicen nuestros clientes</h2>
+      <div class="quotes">
+        <div class="quote">"Atención de primera. El asistente del chat me ayudó a elegir sin presión y coordiné la visita en minutos."<div class="who">— María G.</div></div>
+        <div class="quote">"Financiación clarísima y me entregaron el auto en dos días. Vuelvo seguro."<div class="who">— Diego R.</div></div>
+        <div class="quote">"Probé tres modelos, me explicaron todo por chat y después en persona. Impecable."<div class="who">— Lucía P.</div></div>
+        <div class="quote">"El mejor precio que encontré, y encima con garantía. Recomendadísimo."<div class="who">— Martín S.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Visitanos</h2>
+      <p class="lead">Av. Siempreviva 1234, BUruguay. Lunes a sábado de 9 a 19 hs. ¿Dudas? Abrí el chat abajo a la derecha y te respondemos al toque. Y sí — esta sección larga está para que puedas <b>scrollear en el celular</b> y ver que el globito queda fijo. 👇</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">© 2026 AutoPlanet — Página de ejemplo para probar el chat widget. <a href="#">Términos</a> · <a href="#">Privacidad</a></div>
+  </footer>
 
 
   <!-- ============================================================================
-       EMBED DEL CHAT WIDGET (LEAD)  ·  esto es lo único que el cliente pega en su sitio
-       ----------------------------------------------------------------------------
-       En producción:
-         - gatewayUrl  → la URL del widget-gateway deployado (Railway)
-         - src         → la URL del CDN donde se sirve chat-widget.js (ej: el .gz)
+       EMBED DEL CHAT WIDGET (LEAD) — lo único que el cliente pega en su sitio.
+       En prod: gatewayUrl = URL del gateway en Railway; src = URL del CDN del .js
        ============================================================================ -->
   <script>
     window.ChatWidgetConfig = {
       clientId: 'clientTest',
-      gatewayUrl: 'https://widget-gateway-production-596d.up.railway.app'   // en prod: https://tu-gateway.up.railway.app
+      gatewayUrl: 'https://widget-gateway-production-596d.up.railway.app'
     };
   </script>
   <script src="./chat-widget.js" defer></script>
