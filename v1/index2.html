@@ -1,150 +1,211 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="pt">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoPlanet — Concesionaria</title>
+  <title>Spoticar Direct — Carros usados</title>
   <style>
+    :root { --cyan: #07bbd8; --cyan-dark: #006e90; --dark: #101820; --gray: #f1f0f0; --muted: #6b7280; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { overflow-x: hidden; }          /* nunca scroll horizontal */
-    body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #0f172a; line-height: 1.6; }
+    html, body { overflow-x: hidden; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: var(--dark); line-height: 1.6; background: #fff; }
     img { max-width: 100%; display: block; }
-    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
 
     /* header */
-    header { background: #0f172a; color: #fff; position: sticky; top: 0; z-index: 10; }
-    .header-in { display: flex; align-items: center; gap: 16px; height: 60px; }
-    .logo { font-size: 20px; font-weight: 800; }
-    .logo span { color: #38bdf8; }
-    nav { margin-left: auto; display: flex; gap: 22px; font-size: 14px; font-weight: 600; color: #cbd5e1; }
-    nav a { color: inherit; text-decoration: none; }
-    .cta-top { background: #38bdf8; color: #0f172a; padding: 8px 16px; border-radius: 8px; }
-    @media (max-width: 640px) { nav { display: none; } }   /* en mobile ocultamos el menú (demo) */
+    header { background: #fff; border-bottom: 1px solid var(--gray); position: sticky; top: 0; z-index: 10; }
+    .head-in { display: flex; align-items: center; gap: 18px; height: 66px; }
+    .logo { font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--dark); }
+    .logo b { color: var(--cyan); }
+    nav { margin-left: auto; display: flex; gap: 26px; font-size: 14px; font-weight: 600; color: var(--dark); }
+    .btn-cyan { background: var(--cyan); color: var(--dark); font-weight: 700; padding: 9px 18px; border-radius: 6px; }
+    @media (max-width: 720px) { nav a:not(.btn-cyan) { display: none; } .head-in { gap: 10px; } }
 
-    /* hero */
-    .hero { background: linear-gradient(120deg, #1e293b, #334155); color: #fff; padding: 72px 0; }
-    .hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; max-width: 640px; }
-    .hero p { margin-top: 14px; font-size: 18px; opacity: .9; max-width: 520px; }
-    .hero .btn { display: inline-block; margin-top: 26px; background: #38bdf8; color: #0f172a; padding: 13px 26px; border-radius: 10px; font-weight: 700; text-decoration: none; }
-    @media (max-width: 640px) { .hero { padding: 48px 0; } .hero h1 { font-size: 30px; } .hero p { font-size: 16px; } }
+    /* hero + búsqueda */
+    .hero { background: var(--dark); color: #fff; padding: 54px 0 30px; }
+    .hero h1 { font-size: 38px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+    .hero h1 b { color: var(--cyan); }
+    .hero p { margin-top: 10px; color: #b9c2cb; font-size: 17px; max-width: 560px; }
+    .search { margin-top: 26px; background: #fff; border-radius: 12px; padding: 14px; display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 10px; box-shadow: 0 12px 30px -12px rgba(0,0,0,.5); }
+    .search select { padding: 12px; border: 1px solid var(--gray); border-radius: 8px; font-size: 14px; color: var(--dark); background: #fff; font-family: inherit; }
+    .search .go { background: var(--cyan); color: var(--dark); border: none; border-radius: 8px; font-weight: 800; font-size: 14px; padding: 0 26px; cursor: pointer; }
+    @media (max-width: 760px) { .hero h1 { font-size: 28px; } .search { grid-template-columns: 1fr 1fr; } .search .go { grid-column: 1 / -1; padding: 13px; } }
 
-    /* secciones */
-    section { padding: 56px 0; }
-    section:nth-child(even) { background: #f8fafc; }
-    h2 { font-size: 28px; font-weight: 800; letter-spacing: -.01em; }
-    .lead { margin-top: 8px; color: #475569; max-width: 640px; }
-    @media (max-width: 640px) { h2 { font-size: 23px; } }
+    /* franja de confianza */
+    .trust { background: var(--cyan); color: var(--dark); }
+    .trust-in { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 34px; padding: 12px 20px; font-size: 14px; font-weight: 700; }
+    .trust span::before { content: '✓ '; }
 
-    /* grid de autos */
-    .cars { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    @media (max-width: 860px) { .cars { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 560px) { .cars { grid-template-columns: 1fr; } }
-    .car { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
-    .car img { height: 180px; width: 100%; object-fit: cover; }
-    .car-b { padding: 14px 16px; }
-    .car-b h3 { font-size: 16px; font-weight: 700; }
-    .car-b .price { margin-top: 6px; font-size: 20px; font-weight: 800; color: #0ea5e9; }
-    .car-b .meta { margin-top: 4px; font-size: 13px; color: #94a3b8; }
+    /* listado */
+    section { padding: 50px 0; }
+    section:nth-child(even) { background: #fafbfc; }
+    h2 { font-size: 26px; font-weight: 800; }
+    .sub { margin-top: 6px; color: var(--muted); }
+    .grid { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    @media (max-width: 880px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 580px) { .grid { grid-template-columns: 1fr; } }
 
-    /* features */
-    .feats { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    @media (max-width: 700px) { .feats { grid-template-columns: 1fr; } }
-    .feat { padding: 22px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; }
-    .feat .ic { width: 44px; height: 44px; border-radius: 12px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    .feat h3 { margin-top: 14px; font-size: 18px; font-weight: 700; }
-    .feat p { margin-top: 6px; color: #64748b; font-size: 15px; }
+    .car { background: #fff; border: 1px solid var(--gray); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+    .car .ph { position: relative; }
+    .car .ph img { height: 190px; width: 100%; object-fit: cover; }
+    .car .tag { position: absolute; top: 12px; left: 12px; background: var(--cyan); color: var(--dark); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+    .car .b { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+    .car h3 { font-size: 17px; font-weight: 800; }
+    .car .specs { margin-top: 6px; color: var(--muted); font-size: 13.5px; }
+    .car .price { margin-top: 12px; font-size: 24px; font-weight: 800; }
+    .car .month { color: var(--cyan-dark); font-weight: 700; font-size: 14px; }
+    .car .acts { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .car .acts a { text-align: center; padding: 11px; border-radius: 8px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .02em; }
+    .car .acts .p { background: var(--cyan); color: var(--dark); }
+    .car .acts .s { border: 1.5px solid var(--dark); color: var(--dark); }
 
-    /* testimonios */
-    .quotes { margin-top: 28px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    @media (max-width: 700px) { .quotes { grid-template-columns: 1fr; } }
-    .quote { padding: 22px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; font-style: italic; color: #334155; }
-    .quote .who { margin-top: 12px; font-style: normal; font-weight: 700; color: #0f172a; }
+    /* vantagens */
+    .feats { margin-top: 26px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media (max-width: 860px) { .feats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .feats { grid-template-columns: 1fr; } }
+    .feat { text-align: center; padding: 22px 16px; }
+    .feat .ic { width: 56px; height: 56px; margin: 0 auto; border-radius: 50%; background: rgba(7,187,216,.14); color: var(--cyan-dark); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+    .feat h3 { margin-top: 14px; font-size: 16px; font-weight: 800; }
+    .feat p { margin-top: 4px; color: var(--muted); font-size: 14px; }
 
-    footer { background: #0f172a; color: #94a3b8; padding: 40px 0; font-size: 14px; }
+    footer { background: var(--dark); color: #93a1ad; padding: 40px 0; font-size: 14px; }
+    footer .logo { color: #fff; margin-bottom: 10px; }
     footer a { color: #cbd5e1; }
   </style>
 </head>
 <body>
   <header>
-    <div class="wrap header-in">
-      <div class="logo">Auto<span>Planet</span></div>
+    <div class="wrap head-in">
+      <div class="logo"><b>spoti</b>car</div>
       <nav>
-        <a href="#">Nuevos</a><a href="#">Usados</a><a href="#">Financiación</a>
-        <a href="#">Contacto</a><a href="#" class="cta-top">Reservar</a>
+        <a href="#">Carros usados</a><a href="#">Financiamento</a><a href="#">Vender a minha viatura</a>
+        <a href="#">Contacto</a><a href="#" class="btn-cyan">A minha conta</a>
       </nav>
     </div>
   </header>
 
   <div class="hero">
     <div class="wrap">
-      <h1>Tu próximo auto te está esperando</h1>
-      <p>Más de 200 vehículos nuevos y usados con financiación a medida. Preguntale a nuestro asistente y te ayuda a elegir.</p>
-      <a class="btn" href="#">Ver inventario</a>
+      <h1>Carros usados com <b>garantia Spoticar</b></h1>
+      <p>Viaturas multimarca revistas em 100 pontos, com garantia e financiamento à sua medida.</p>
+      <div class="search">
+        <select><option>Marca</option><option>Peugeot</option><option>Citroën</option><option>Opel</option><option>Renault</option><option>Fiat</option></select>
+        <select><option>Modelo</option></select>
+        <select><option>Combustível</option><option>Gasolina</option><option>Diesel</option><option>Híbrido</option><option>Elétrico</option></select>
+        <select><option>Preço máx.</option><option>até 15.000 €</option><option>até 25.000 €</option><option>até 40.000 €</option></select>
+        <button class="go">Pesquisar</button>
+      </div>
     </div>
   </div>
 
+  <div class="trust"><div class="wrap trust-in">
+    <span>Garantia até 24 meses</span><span>Revisão em 100 pontos</span><span>Financiamento à medida</span><span>Retoma da sua viatura</span>
+  </div></div>
+
   <section>
     <div class="wrap">
-      <h2>Destacados de la semana</h2>
-      <p class="lead">Una selección de nuestros modelos más buscados, listos para entrega inmediata.</p>
-      <div class="cars">
-        <div class="car"><img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80" alt=""><div class="car-b"><h3>Honda CR-V EX-L 2026</h3><div class="price">$47.021</div><div class="meta">6 km · Automático · Híbrido</div></div></div>
-        <div class="car"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80" alt=""><div class="car-b"><h3>Honda Civic Sport 2024</h3><div class="price">$31.480</div><div class="meta">18.400 km · CVT · Nafta</div></div></div>
-        <div class="car"><img src="https://images.unsplash.com/photo-1571607388263-1044f9ea01dd?w=600&q=80" alt=""><div class="car-b"><h3>Honda Pilot TrailSport 2026</h3><div class="price">$52.346</div><div class="meta">12 km · Automático · Nafta</div></div></div>
-        <div class="car"><img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80" alt=""><div class="car-b"><h3>Ford Mustang GT 2023</h3><div class="price">$61.900</div><div class="meta">9.200 km · Manual · Nafta</div></div></div>
-        <div class="car"><img src="https://images.unsplash.com/photo-1550355291-bbee04a92027?w=600&q=80" alt=""><div class="car-b"><h3>BMW Serie 3 2025</h3><div class="price">$54.200</div><div class="meta">2.100 km · Automático · Nafta</div></div></div>
-        <div class="car"><img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80" alt=""><div class="car-b"><h3>Toyota Hilux SRX 2024</h3><div class="price">$45.700</div><div class="meta">14.000 km · Automático · Diésel</div></div></div>
-      </div>
+      <h2>Viaturas em destaque</h2>
+      <p class="sub">Uma seleção das nossas melhores oportunidades, prontas a entregar.</p>
+      <div class="grid" id="grid"></div>
     </div>
   </section>
 
   <section>
     <div class="wrap">
-      <h2>¿Por qué AutoPlanet?</h2>
-      <p class="lead">20 años acompañando a cada cliente en la compra de su vehículo.</p>
+      <h2>As vantagens Spoticar Direct</h2>
       <div class="feats">
-        <div class="feat"><div class="ic">🛡️</div><h3>Garantía extendida</h3><p>Todos nuestros usados con revisión de 150 puntos y garantía de hasta 3 años.</p></div>
-        <div class="feat"><div class="ic">💳</div><h3>Financiación flexible</h3><p>Planes a tu medida, aprobación rápida y sin sorpresas en la letra chica.</p></div>
-        <div class="feat"><div class="ic">🚗</div><h3>Entrega inmediata</h3><p>Más de 200 unidades en stock, listas para que te las lleves hoy mismo.</p></div>
+        <div class="feat"><div class="ic">🛡️</div><h3>Garantia incluída</h3><p>Até 24 meses em todas as viaturas.</p></div>
+        <div class="feat"><div class="ic">🔧</div><h3>Revisão 100 pontos</h3><p>Cada viatura inspecionada ao detalhe.</p></div>
+        <div class="feat"><div class="ic">💳</div><h3>Financiamento</h3><p>Soluções à sua medida, aprovação rápida.</p></div>
+        <div class="feat"><div class="ic">🔄</div><h3>Retoma</h3><p>Avaliamos e retomamos a sua viatura.</p></div>
       </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="wrap">
-      <h2>Lo que dicen nuestros clientes</h2>
-      <div class="quotes">
-        <div class="quote">"Atención de primera. El asistente del chat me ayudó a elegir sin presión y coordiné la visita en minutos."<div class="who">— María G.</div></div>
-        <div class="quote">"Financiación clarísima y me entregaron el auto en dos días. Vuelvo seguro."<div class="who">— Diego R.</div></div>
-        <div class="quote">"Probé tres modelos, me explicaron todo por chat y después en persona. Impecable."<div class="who">— Lucía P.</div></div>
-        <div class="quote">"El mejor precio que encontré, y encima con garantía. Recomendadísimo."<div class="who">— Martín S.</div></div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="wrap">
-      <h2>Visitanos</h2>
-      <p class="lead">Av. Siempreviva 1234, BUruguay. Lunes a sábado de 9 a 19 hs. ¿Dudas? Abrí el chat abajo a la derecha y te respondemos al toque. Y sí — esta sección larga está para que puedas <b>scrollear en el celular</b> y ver que el globito queda fijo. 👇</p>
     </div>
   </section>
 
   <footer>
-    <div class="wrap">© 2026 AutoPlanet — Página de ejemplo para probar el chat widget. <a href="#">Términos</a> · <a href="#">Privacidad</a></div>
+    <div class="wrap">
+      <div class="logo"><b>spoti</b>car</div>
+      © 2026 Spoticar Portugal — Página de exemplo para testar o chat. <a href="#">Termos</a> · <a href="#">Privacidade</a>
+    </div>
   </footer>
 
+  <script>
+    // catálogo de exemplo (multimarca, estilo Spoticar Direct)
+    const CARS = [
+      { t: 'Peugeot 208 PureTech', s: '2022 · 34.500 km · Gasolina', p: '18.900 €', m: '249 €/mês', tag: 'Destaque', img: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80' },
+      { t: 'Citroën C3 Shine', s: '2021 · 41.200 km · Gasolina', p: '15.400 €', m: '205 €/mês', tag: '', img: 'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=600&q=80' },
+      { t: 'Opel Corsa Edition', s: '2023 · 12.800 km · Gasolina', p: '19.750 €', m: '262 €/mês', tag: 'Novo', img: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80' },
+      { t: 'Renault Clio dCi', s: '2020 · 58.000 km · Diesel', p: '14.200 €', m: '189 €/mês', tag: '', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80' },
+      { t: 'Peugeot 3008 Hybrid', s: '2022 · 29.000 km · Híbrido', p: '31.500 €', m: '415 €/mês', tag: 'Híbrido', img: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?w=600&q=80' },
+      { t: 'Fiat 500e Elétrico', s: '2023 · 8.500 km · Elétrico', p: '22.900 €', m: '299 €/mês', tag: 'Elétrico', img: 'https://images.unsplash.com/photo-1471479917193-f00955256257?w=600&q=80' },
+    ];
+    document.getElementById('grid').innerHTML = CARS.map((c) => `
+      <div class="car">
+        <div class="ph"><img src="${c.img}" alt="${c.t}">${c.tag ? `<span class="tag">${c.tag}</span>` : ''}</div>
+        <div class="b">
+          <h3>${c.t}</h3>
+          <div class="specs">${c.s}</div>
+          <div class="price">${c.p}</div>
+          <div class="month">desde ${c.m}</div>
+          <div class="acts" style="margin-top:auto;padding-top:14px">
+            <a class="p" href="#">Estou interessado/a</a>
+            <a class="s" href="#">Saiba mais</a>
+          </div>
+        </div>
+      </div>`).join('');
+  </script>
 
   <!-- ============================================================================
-       EMBED DEL CHAT WIDGET (LEAD) — lo único que el cliente pega en su sitio.
-       En prod: gatewayUrl = URL del gateway en Railway; src = URL del CDN del .js
+       EMBED DEL CHAT WIDGET (LEAD) — tema Spoticar.
+       En prod, `overrides` NO va acá: esta config vive en el widget_config del client
+       (backend). Acá lo pongo como override para que la demo muestre el tema sin depender
+       del backend.
        ============================================================================ -->
   <script>
     window.ChatWidgetConfig = {
       clientId: 'clientTest',
-      gatewayUrl: 'https://widget-gateway-production-596d.up.railway.app'
+      gatewayUrl: 'https://widget-gateway-production-596d.up.railway.app',
+      overrides: {
+        "title": "Chat Spoticar", "agentName": "Spoticar", "agentAvatar": null, "agentStatus": "Online",
+        "brandColor": "#07bbd8", "brandColorDark": "#006e90",
+        "launcherImage": null, "launcherImageSize": "64px",
+        "hintMessage": "Precisa de ajuda a encontrar a sua viatura?", "hintEnabled": true,
+        "welcomeMessage": "Olá! Em que posso ajudar a encontrar a sua próxima viatura?",
+        "formIntro": "Antes de começarmos, deixe-nos os seus dados para o podermos ajudar melhor.",
+        "inputPlaceholder": "Escreva a sua mensagem...",
+        "quickReplies": ["Encontrar uma viatura", "Elétricos e híbridos", "Avaliar a minha viatura"],
+        "startButtonText": "Iniciar conversa", "poweredByText": "Powered by Full Growth", "poweredByUrl": null,
+        "chatBackgroundColor": "#ffffff", "headerTextColor": "#101820",
+        "userMessageColor": null, "userMessageTextColor": "#101820",
+        "botMessageColor": "#f1f0f0", "botMessageTextColor": "#101820",
+        "sendButtonColor": null, "sendButtonIconColor": "#101820",
+        "inputBorder": "#f1f0f0", "inputBorderFocus": null,
+        "fontFamily": "'Segoe UI', system-ui, -apple-system, sans-serif",
+        "recaptchaSiteKey": null, "activateMic": true, "vehicleCards": true,
+        "text": {
+          "nameLabel": "Nome", "namePlaceholder": "O seu nome",
+          "emailLabel": "Email", "emailPlaceholder": "nome@email.com",
+          "phoneLabel": "Telefone", "phonePlaceholder": "+351 912 345 678",
+          "nameError": "Introduza o seu nome", "emailError": "Introduza um email válido",
+          "phoneError": "Introduza um telefone válido", "captchaError": "Complete o reCAPTCHA",
+          "privacy": "Ao continuar, aceita ser contactado.", "recaptchaNotice": "Protegido por reCAPTCHA.",
+          "starting": "A iniciar...", "minimizeAria": "Minimizar", "sendAria": "Enviar", "micAria": "Gravar", "back": "Voltar",
+          "vinLabel": "", "stockLabel": "", "priceLabel": "",
+          "vDetail": "Saiba mais", "vSelect": "Estou interessado/a", "vInterested": "Tenho interesse em",
+          "ctaPrimary": "ESTOU INTERESSADO/A", "ctaSecondary": "SAIBA MAIS",
+          "errSession": "A sua sessão terminou. Atualize a página para começar de novo.",
+          "errLimit": "Atingiu o limite de mensagens. Poderá continuar dentro de momentos.",
+          "errOrigin": "Este site não está autorizado a usar o chat.",
+          "errCaptcha": "O reCAPTCHA não foi validado. Tente novamente.",
+          "errGeneric": "Ocorreu um erro ao processar a sua mensagem. Tente novamente.",
+          "loginFail": "Não foi possível iniciar a conversa. Tente novamente.",
+          "noSession": "Não foi recebida a sessão.", "botFallback": "Não percebi. Pode reformular?",
+          "audioDisabled": "O áudio ainda não está disponível nesta versão.", "audioSent": "🎤 Áudio enviado"
+        }
+      }
     };
   </script>
   <script src="./chat-widget.js" defer></script>
-  <!-- ==================== fin embed ==================== -->
 </body>
 </html>

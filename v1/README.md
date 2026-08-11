@@ -14,6 +14,7 @@ Widget de captación de leads con **cuestionario + chat**, embebible en cualquie
 | `chat-widget.js` | El widget (IIFE autocontenido). Es lo que se embebe en el sitio del cliente. |
 | `index.html` | Demo con selector de temas (aplica `overrides`). Necesita el gateway levantado. |
 | `index2.html` | Ejemplo de embed real (snippet tal cual lo pega un cliente). |
+| `widget-config.default.json` | **Template completo** con TODAS las claves y sus defaults — copiá y editá al dar de alta un client. |
 | `README.md` | Esto. |
 
 ## Previsualizar (local)
@@ -55,6 +56,11 @@ Merge de config: `DEFAULTS < widget_config (backend) < overrides (embed)`.
 
 Es el JSONB de la columna `widget_config` del client. **Todo es opcional** (hay defaults). Es **público**
 (no metas secretos acá).
+
+> 🚀 **Dar de alta un client:** copiá [`widget-config.default.json`](widget-config.default.json) (tiene
+> TODAS las claves con sus defaults), editá lo que cambie para ese client, y pegalo en su `widget_config`.
+> Como el widget mergea `DEFAULTS < backend`, en la práctica **solo hace falta guardar lo que difiere** del
+> default — pero tener el template completo a mano hace el onboarding trivial.
 
 | Campo | Default | Descripción |
 |---|---|---|

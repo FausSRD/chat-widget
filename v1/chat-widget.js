@@ -124,6 +124,8 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
   ));
+  // "Label: valor" — si el label viene vacío, muestra solo el valor (sin ": " colgado).
+  const labeled = (label, value) => !value ? '' : (label ? esc(label) + ': ' + esc(value) : esc(value));
   const onReady = (fn) => {
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn);
@@ -260,7 +262,9 @@
       position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%;
       background: #ef4444; border: 2px solid #fff; display: none;
     }
-    .lhw-launcher.unread .lhw-badge { display: block; }
+    .lhw-launcher.unread .lhw-badge { display: block; animation: lhw-badge-in .3s ease-out, lhw-badge-pulse 1.8s ease-in-out .3s infinite; }
+    @keyframes lhw-badge-in { from { transform: scale(0); } to { transform: scale(1); } }
+    @keyframes lhw-badge-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.28); } }
 
     /* --------------------------------------------------------------- hint */
     .lhw-hint {
@@ -543,6 +547,11 @@
 
     // reCAPTCHA (si el client tiene site key). Se renderiza cuando cargue el script de Google.
     if (this.cfg.recaptchaSiteKey) this.loadRecaptcha();
+
+    // Notificación proactiva: a los ~2s, si el chat sigue cerrado, aparece el punto en el ícono
+    // (invita a abrir, como un "tenés un mensaje"). Se limpia al abrir. El caso "respuesta llega con
+    // el chat cerrado" ya lo marca addBot.
+    setTimeout(() => { if (!this.opened) this.els.launcher.classList.add('unread'); }, 2000);
   };
 
   /* ---- abrir / cerrar --------------------------------------------------- */
@@ -741,7 +750,7 @@
       card.innerHTML = `
         <img class="lhw-vimg" src="${esc(v.image || '')}" alt="${esc(v.title || '')}" loading="lazy">
         <div class="lhw-vbody">
-          <div class="lhw-vmeta">${v.stock ? esc(t.stockLabel) + ': ' + esc(v.stock) : ''}</div>
+          <div class="lhw-vmeta">${labeled(t.stockLabel, v.stock)}</div>
           <div class="lhw-vtitle">${esc(v.title || '')}</div>
           ${stats ? `<div class="lhw-vstats">${stats}</div>` : ''}
           <div class="lhw-vprice">${esc(v.price || '')}</div>
@@ -798,10 +807,10 @@
       <div class="lhw-sheet-body">
         <img class="lhw-sheet-img" src="${esc(v.image || '')}" alt="${esc(v.title || '')}">
         <div class="lhw-vd-body">
-          <div class="lhw-vd-meta">${v.vin ? esc(t.vinLabel) + ': ' + esc(v.vin) : ''}${v.stock ? ' · ' + esc(t.stockLabel) + ': ' + esc(v.stock) : ''}</div>
+          <div class="lhw-vd-meta">${[labeled(t.vinLabel, v.vin), labeled(t.stockLabel, v.stock)].filter(Boolean).join(' · ')}</div>
           <div class="lhw-vd-title">${esc(v.title || '')}</div>
           <div class="lhw-specs">${rows}</div>
-          <div class="lhw-vd-price"><small>${esc(t.priceLabel)}</small>${esc(v.price || '')}</div>
+          <div class="lhw-vd-price">${t.priceLabel ? '<small>' + esc(t.priceLabel) + '</small>' : ''}${esc(v.price || '')}</div>
           <a class="lhw-cta primary" href="${esc((v.ctaPrimary && v.ctaPrimary.url) || v.url || '#')}" target="_blank" rel="noopener">${esc((v.ctaPrimary && v.ctaPrimary.label) || t.ctaPrimary)}</a>
           <a class="lhw-cta ghost" href="${esc((v.ctaSecondary && v.ctaSecondary.url) || v.url || '#')}" target="_blank" rel="noopener">${esc((v.ctaSecondary && v.ctaSecondary.label) || t.ctaSecondary)}</a>
         </div>
