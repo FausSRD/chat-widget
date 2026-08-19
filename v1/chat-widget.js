@@ -570,7 +570,7 @@
   /* ---- sesión: ping para saber si seguimos logueados -------------------- */
   Widget.prototype.ping = function () {
     if (!this.sessionId) { this.showForm(); return; }
-    fetch(API.ping, { method: 'GET', headers: { 'x-session-id': this.sessionId } })
+    fetch(API.ping, { method: 'GET', headers: { 'x-session-id': this.sessionId, 'x-client-id': CLIENT_ID } })
       .then((r) => { r.ok ? this.showChat() : this.resetSession(); })
       .catch(() => this.resetSession());
   };
@@ -634,7 +634,7 @@
 
     fetch(API.login, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-captcha-token': captcha || '' },
+      headers: { 'Content-Type': 'application/json', 'x-captcha-token': captcha || '', 'x-client-id': CLIENT_ID },
       body: JSON.stringify(payload),
     })
       .then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, t)); }); return r.json(); })
@@ -667,7 +667,7 @@
     const done = () => { this.busy = false; };
     const req = fetch(API.chat, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId },
+          headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId, 'x-client-id': CLIENT_ID },
           body: JSON.stringify({ message: text }),
         }).then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, tx)); }); return r.json(); });
 
@@ -694,7 +694,7 @@
 
     const req = toB64.then((audio) => fetch(API.voice, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId },
+          headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId, 'x-client-id': CLIENT_ID },
           body: JSON.stringify({ audio }),
         }).then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, tx)); }); return r.json(); }));
 
