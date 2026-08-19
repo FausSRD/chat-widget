@@ -31,13 +31,14 @@ avatar, quick replies, etc.) lo trae el widget desde `GET /api/v2/config/{client
 
 ```html
 <script>
-  window.ChatWidgetConfig = {
-    clientId: 'clientTest',                 // slug del client (data-client-id)
-    gatewayUrl: 'https://tu-gateway.up.railway.app'
-  };
+  window.ChatWidgetConfig = { clientId: 'clientTest' };   // el client SOLO define su clientId
 </script>
 <script src="https://tu-cdn/chat-widget/v1/chat-widget.js" defer></script>
 ```
+
+El **`gatewayUrl` NO va en el embed**: lo inyecta el server que sirve el `chat-widget.js`, desde la env
+var **`GATEWAY_URL`** (definida por deploy). Así todos los clients de un deploy apuntan al mismo gateway
+sin repetirlo, y cambiás de gateway (staging/prod) tocando una env, no cada snippet.
 
 El header `Origin` lo pone el navegador solo; el gateway resuelve el client por ese Origin, así que
 el sitio donde se embebe tiene que coincidir con el `host` del client en la DB.
@@ -47,8 +48,10 @@ el sitio donde se embebe tiene que coincidir con el `host` del client en la DB.
 | Campo | Req. | Descripción |
 |---|---|---|
 | `clientId` | sí | Slug del client. Se usa para pedir la config y como namespace de `localStorage`. |
-| `gatewayUrl` | sí | URL base del widget-gateway (sin barra final). |
+| `gatewayUrl` | no | URL del gateway. **Normalmente NO se pone** — viene inyectada por el server (env `GATEWAY_URL`). Solo para override puntual. |
 | `overrides` | no | Objeto que pisa la config del backend (dev/preview). En prod no se usa. |
+
+Prioridad del gatewayUrl: `embed.gatewayUrl` → `window.__CW_GATEWAY_URL__` (inyectado por el server desde `GATEWAY_URL`) → `http://localhost:8080` (fallback dev).
 
 Merge de config: `DEFAULTS < widget_config (backend) < overrides (embed)`.
 

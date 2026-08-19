@@ -25,9 +25,12 @@
   'use strict';
 
   // ---- Conexión + overrides que vienen del snippet de embed -----------------
-  const embed = (typeof window !== 'undefined' && window.ChatWidgetConfig) || {};
+  const win = (typeof window !== 'undefined') ? window : {};
+  const embed = win.ChatWidgetConfig || {};
   const CLIENT_ID = embed.clientId || 'clientTest';
-  const GATEWAY_URL = (embed.gatewayUrl || 'http://localhost:8080').replace(/\/$/, '');
+  // gatewayUrl por prioridad: 1) explícito en el embed  2) inyectado por el server (env por-deploy,
+  // window.__CW_GATEWAY_URL__)  3) fallback de dev. Así el client normal solo define su clientId.
+  const GATEWAY_URL = (embed.gatewayUrl || win.__CW_GATEWAY_URL__ || 'http://localhost:8080').replace(/\/$/, '');
 
   const API = {
     config: `${GATEWAY_URL}/api/v2/config/${encodeURIComponent(CLIENT_ID)}`,
