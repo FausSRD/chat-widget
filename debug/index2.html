@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spoticar Direct — Carros usados</title>
+  <style>
+    :root { --cyan: #07bbd8; --cyan-dark: #006e90; --dark: #101820; --gray: #f1f0f0; --muted: #6b7280; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { overflow-x: hidden; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: var(--dark); line-height: 1.6; background: #fff; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+
+    /* header */
+    header { background: #fff; border-bottom: 1px solid var(--gray); position: sticky; top: 0; z-index: 10; }
+    .head-in { display: flex; align-items: center; gap: 18px; height: 66px; }
+    .logo { font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--dark); }
+    .logo b { color: var(--cyan); }
+    nav { margin-left: auto; display: flex; gap: 26px; font-size: 14px; font-weight: 600; color: var(--dark); }
+    .btn-cyan { background: var(--cyan); color: var(--dark); font-weight: 700; padding: 9px 18px; border-radius: 6px; }
+    @media (max-width: 720px) { nav a:not(.btn-cyan) { display: none; } .head-in { gap: 10px; } }
+
+    /* hero + búsqueda */
+    .hero { background: var(--dark); color: #fff; padding: 54px 0 30px; }
+    .hero h1 { font-size: 38px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+    .hero h1 b { color: var(--cyan); }
+    .hero p { margin-top: 10px; color: #b9c2cb; font-size: 17px; max-width: 560px; }
+    .search { margin-top: 26px; background: #fff; border-radius: 12px; padding: 14px; display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 10px; box-shadow: 0 12px 30px -12px rgba(0,0,0,.5); }
+    .search select { padding: 12px; border: 1px solid var(--gray); border-radius: 8px; font-size: 14px; color: var(--dark); background: #fff; font-family: inherit; }
+    .search .go { background: var(--cyan); color: var(--dark); border: none; border-radius: 8px; font-weight: 800; font-size: 14px; padding: 0 26px; cursor: pointer; }
+    @media (max-width: 760px) { .hero h1 { font-size: 28px; } .search { grid-template-columns: 1fr 1fr; } .search .go { grid-column: 1 / -1; padding: 13px; } }
+
+    /* franja de confianza */
+    .trust { background: var(--cyan); color: var(--dark); }
+    .trust-in { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 34px; padding: 12px 20px; font-size: 14px; font-weight: 700; }
+    .trust span::before { content: '✓ '; }
+
+    /* listado */
+    section { padding: 50px 0; }
+    section:nth-child(even) { background: #fafbfc; }
+    h2 { font-size: 26px; font-weight: 800; }
+    .sub { margin-top: 6px; color: var(--muted); }
+    .grid { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    @media (max-width: 880px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 580px) { .grid { grid-template-columns: 1fr; } }
+
+    .car { background: #fff; border: 1px solid var(--gray); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+    .car .ph { position: relative; }
+    .car .ph img { height: 190px; width: 100%; object-fit: cover; }
+    .car .tag { position: absolute; top: 12px; left: 12px; background: var(--cyan); color: var(--dark); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+    .car .b { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+    .car h3 { font-size: 17px; font-weight: 800; }
+    .car .specs { margin-top: 6px; color: var(--muted); font-size: 13.5px; }
+    .car .price { margin-top: 12px; font-size: 24px; font-weight: 800; }
+    .car .month { color: var(--cyan-dark); font-weight: 700; font-size: 14px; }
+    .car .acts { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .car .acts a { text-align: center; padding: 11px; border-radius: 8px; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .02em; }
+    .car .acts .p { background: var(--cyan); color: var(--dark); }
+    .car .acts .s { border: 1.5px solid var(--dark); color: var(--dark); }
+
+    /* vantagens */
+    .feats { margin-top: 26px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media (max-width: 860px) { .feats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .feats { grid-template-columns: 1fr; } }
+    .feat { text-align: center; padding: 22px 16px; }
+    .feat .ic { width: 56px; height: 56px; margin: 0 auto; border-radius: 50%; background: rgba(7,187,216,.14); color: var(--cyan-dark); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+    .feat h3 { margin-top: 14px; font-size: 16px; font-weight: 800; }
+    .feat p { margin-top: 4px; color: var(--muted); font-size: 14px; }
+
+    footer { background: var(--dark); color: #93a1ad; padding: 40px 0; font-size: 14px; }
+    footer .logo { color: #fff; margin-bottom: 10px; }
+    footer a { color: #cbd5e1; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap head-in">
+      <div class="logo"><b>spoti</b>car</div>
+      <nav>
+        <a href="#">Carros usados</a><a href="#">Financiamento</a><a href="#">Vender a minha viatura</a>
+        <a href="#">Contacto</a><a href="#" class="btn-cyan">A minha conta</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <h1>Carros usados com <b>garantia Spoticar</b></h1>
+      <p>Viaturas multimarca revistas em 100 pontos, com garantia e financiamento à sua medida.</p>
+      <div class="search">
+        <select><option>Marca</option><option>Peugeot</option><option>Citroën</option><option>Opel</option><option>Renault</option><option>Fiat</option></select>
+        <select><option>Modelo</option></select>
+        <select><option>Combustível</option><option>Gasolina</option><option>Diesel</option><option>Híbrido</option><option>Elétrico</option></select>
+        <select><option>Preço máx.</option><option>até 15.000 €</option><option>até 25.000 €</option><option>até 40.000 €</option></select>
+        <button class="go">Pesquisar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="trust"><div class="wrap trust-in">
+    <span>Garantia até 24 meses</span><span>Revisão em 100 pontos</span><span>Financiamento à medida</span><span>Retoma da sua viatura</span>
+  </div></div>
+
+  <section>
+    <div class="wrap">
+      <h2>Viaturas em destaque</h2>
+      <p class="sub">Uma seleção das nossas melhores oportunidades, prontas a entregar.</p>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>As vantagens Spoticar Direct</h2>
+      <div class="feats">
+        <div class="feat"><div class="ic">🛡️</div><h3>Garantia incluída</h3><p>Até 24 meses em todas as viaturas.</p></div>
+        <div class="feat"><div class="ic">🔧</div><h3>Revisão 100 pontos</h3><p>Cada viatura inspecionada ao detalhe.</p></div>
+        <div class="feat"><div class="ic">💳</div><h3>Financiamento</h3><p>Soluções à sua medida, aprovação rápida.</p></div>
+        <div class="feat"><div class="ic">🔄</div><h3>Retoma</h3><p>Avaliamos e retomamos a sua viatura.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="logo"><b>spoti</b>car</div>
+      © 2026 Spoticar Portugal — Página de exemplo para testar o chat. <a href="#">Termos</a> · <a href="#">Privacidade</a>
+    </div>
+  </footer>
+
+  <script>
+    // catálogo de exemplo (multimarca, estilo Spoticar Direct)
+    const CARS = [
+      { t: 'Peugeot 208 PureTech', s: '2022 · 34.500 km · Gasolina', p: '18.900 €', m: '249 €/mês', tag: 'Destaque', img: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80' },
+      { t: 'Citroën C3 Shine', s: '2021 · 41.200 km · Gasolina', p: '15.400 €', m: '205 €/mês', tag: '', img: 'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=600&q=80' },
+      { t: 'Opel Corsa Edition', s: '2023 · 12.800 km · Gasolina', p: '19.750 €', m: '262 €/mês', tag: 'Novo', img: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=600&q=80' },
+      { t: 'Renault Clio dCi', s: '2020 · 58.000 km · Diesel', p: '14.200 €', m: '189 €/mês', tag: '', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80' },
+      { t: 'Peugeot 3008 Hybrid', s: '2022 · 29.000 km · Híbrido', p: '31.500 €', m: '415 €/mês', tag: 'Híbrido', img: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?w=600&q=80' },
+      { t: 'Fiat 500e Elétrico', s: '2023 · 8.500 km · Elétrico', p: '22.900 €', m: '299 €/mês', tag: 'Elétrico', img: 'https://images.unsplash.com/photo-1471479917193-f00955256257?w=600&q=80' },
+    ];
+    document.getElementById('grid').innerHTML = CARS.map((c) => `
+      <div class="car">
+        <div class="ph"><img src="${c.img}" alt="${c.t}">${c.tag ? `<span class="tag">${c.tag}</span>` : ''}</div>
+        <div class="b">
+          <h3>${c.t}</h3>
+          <div class="specs">${c.s}</div>
+          <div class="price">${c.p}</div>
+          <div class="month">desde ${c.m}</div>
+          <div class="acts" style="margin-top:auto;padding-top:14px">
+            <a class="p" href="#">Estou interessado/a</a>
+            <a class="s" href="#">Saiba mais</a>
+          </div>
+        </div>
+      </div>`).join('');
+  </script>
+
+  <!-- ============================================================================
+       EMBED DEL CHAT WIDGET (LEAD) — build de REVISIÓN.
+       El client (estilos, textos, idioma) vive en el widget_config del backend: acá solo
+       va el clientId. Cada client está atado a su dominio, así que la demo elige el suyo
+       según el host desde el que se sirve.
+       ============================================================================ -->
+  <script>
+    const DEMO_CLIENTS = {
+      'chat-widget-production-cd63.up.railway.app': 'clientTestDemo',
+      '127.0.0.1': 'clientTestDebug',
+    };
+    window.ChatWidgetConfig = {
+      clientId: DEMO_CLIENTS[location.hostname] || 'clientTestDemo'
+    };
+  </script>
+  <!-- <script src="https://chat-widget-production-cd63.up.railway.app/v1/chat-widget.js" defer></script> -->
+  <script src="./chat-widget.js" defer></script>
+</body>
+</html>
