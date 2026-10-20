@@ -46,8 +46,8 @@ app.get('/v1/chat-widget.js', (req, res) => {
 //   http://localhost:3000/v1/index2.html
 app.use('/v1', express.static(path.join(__dirname, 'v1')));
 
-// Build de revisión (copia de v1 con modo debug). Mismo trato que /v1: inyecta el gateway y sirve
-// los estáticos de debug/. No se publica en el sitio del cliente para visitantes finales.
+// Review build (copy of v1 with debug mode). Same treatment as /v1: injects the gateway and serves
+// the debug/ statics. Not published on the client site for end visitors.
 app.get('/debug/chat-widget.js', (req, res) => {
   const js = fs.readFileSync(path.join(__dirname, 'debug', 'chat-widget.js'), 'utf8');
   res.type('application/javascript').send(`window.__CW_GATEWAY_URL__=${JSON.stringify(GATEWAY_URL)};

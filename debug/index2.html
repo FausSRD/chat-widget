@@ -157,10 +157,10 @@
   </script>
 
   <!-- ============================================================================
-       EMBED DEL CHAT WIDGET (LEAD) — build de REVISIÓN.
-       El client (estilos, textos, idioma) vive en el widget_config del backend: acá solo
-       va el clientId. Cada client está atado a su dominio, así que la demo elige el suyo
-       según el host desde el que se sirve.
+       CHAT WIDGET EMBED (LEAD) — REVIEW build.
+       Styles, copy and language live in the backend widget_config: only the clientId goes
+       here. Each client is bound to its own domain, so the demo picks the matching one
+       from the host it is served from.
        ============================================================================ -->
   <script>
     const DEMO_CLIENTS = {
@@ -171,7 +171,7 @@
       clientId: DEMO_CLIENTS[location.hostname] || 'clientTestDemo'
     };
   </script>
-  <!-- <script src="https://chat-widget-production-cd63.up.railway.app/v1/chat-widget.js" defer></script> -->
+  <!-- <script src="apps.fullgrowthlabs.com/v1/chat-widget.js" defer></script> -->
   <script src="./chat-widget.js" defer></script>
 </body>
 </html>

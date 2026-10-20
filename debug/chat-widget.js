@@ -15,8 +15,8 @@
  *   - Aislamiento de estilos con escudo `all: initial` (probado con reCAPTCHA).
  *
  *  API del gateway (widget-gateway):
- *   Build de revisión: copia de v1/ con modo debug (corregir respuestas de la IA). NO publicar
- *   en el sitio del cliente para visitantes finales.
+ *   Review build: copy of v1/ with debug mode (correcting AI answers). Do NOT publish it on the
+ *   client site for end visitors.
  *
  *   - GET  {gw}/api/v2/config/{clientId}          → widget_config (público)
  *   - POST {gw}/api/v2/widget/lead/login          → { session_id }   (x-captcha-token)
@@ -47,6 +47,10 @@
 
   const LS_SESSION = `lh:${CLIENT_ID}:session`;
   const LS_MESSAGES = `lh:${CLIENT_ID}:messages`;
+  // Reviewer email, kept per client so it survives reloads and is not asked on every correction.
+  const LS_REVIEWER = `lh:${CLIENT_ID}:reviewer`;
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // ---- Defaults (se sobreescriben con el widget_config del backend) ---------
   const DEFAULTS = {
@@ -131,6 +135,9 @@
     dbgSaved: 'Corrección enviada',
     dbgEmpty: 'Escribí la respuesta correcta',
     dbgFail: 'No se pudo enviar la corrección',
+    dbgReviewer: 'Tu email',
+    dbgReviewerPlaceholder: 'tu@email.com',
+    dbgReviewerInvalid: 'Ingresá un email válido',
     },
   };
 
@@ -326,6 +333,10 @@
       color: var(--header-fg); opacity: .85; transition: background .2s, opacity .2s; }
     .lhw-hbtn:hover { background: rgba(255,255,255,.18); opacity: 1; }
     .lhw-dbg.on { background: rgba(255,255,255,.28); opacity: 1; }
+
+    .lhw-fix-email { padding: 7px 10px; font-size: 13px; color: #0f172a; background: #fff;
+      border: 1.5px solid var(--input-border); border-radius: 9px; font-family: inherit; }
+    .lhw-fix-email:focus { border-color: var(--input-focus); }
 
     /* --------------------------------------------------------- revisión */
     .lhw-flag { display: none; align-items: center; gap: 4px; margin-top: 4px; padding: 3px 8px;
@@ -570,6 +581,7 @@
     this.cfg = cfg; this.els = els;
     this.sessionId = localStorage.getItem(LS_SESSION) || null;
     this.debug = false;
+    this.reviewer = localStorage.getItem(LS_REVIEWER) || '';
     this.messages = JSON.parse(localStorage.getItem(LS_MESSAGES) || '[]');
     this.busy = false;
     this.opened = false;
@@ -664,7 +676,7 @@
       if (msg) el.textContent = msg;
       el.classList.add('show');
     };
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+    const emailOk = EMAIL_RE.test(email.value.trim());
     const captcha = (window.grecaptcha && this._captchaId != null) ? window.grecaptcha.getResponse(this._captchaId) : '';
 
     let ok = true;
@@ -779,7 +791,7 @@
     this.scroll();
   };
 
-  /* ---- modo revisión ---------------------------------------------------- */
+  /* ---- review mode ------------------------------------------------------ */
   Widget.prototype.toggleDebug = function () {
     this.debug = !this.debug;
     this.els.panel.classList.toggle('lhw-debug', this.debug);
@@ -787,7 +799,7 @@
     if (!this.debug) this.els.msgs.querySelectorAll('.lhw-fix').forEach((n) => n.remove());
   };
 
-  /** Cuelga el botón de corrección en una burbuja del bot. El CSS lo oculta fuera del modo revisión. */
+  /** Hangs the correct button on a bot bubble. CSS hides it outside review mode. */
   Widget.prototype.addFlag = function (bubble, index) {
     if (!this.previousUser(index)) return;
     const btn = h('button', 'lhw-flag', ICONS.flag + esc(this.cfg.text.dbgFlag));
@@ -795,7 +807,7 @@
     bubble.appendChild(btn);
   };
 
-  /** Último mensaje del usuario anterior a index ('' si no hay). */
+  /** Last user message before index ('' when there is none). */
   Widget.prototype.previousUser = function (index) {
     for (let i = index - 1; i >= 0; i--) {
       if (this.messages[i] && this.messages[i].role === 'user') return this.messages[i].content;
@@ -820,6 +832,9 @@
       <div class="lhw-fix-quote">${esc(aiResponse)}</div>
       <div class="lhw-fix-label">${esc(t.dbgExpected)}</div>
       <textarea class="lhw-fix-ta" placeholder="${esc(t.dbgPlaceholder)}"></textarea>
+      <div class="lhw-fix-label">${esc(t.dbgReviewer)}</div>
+      <input class="lhw-fix-email" type="email" value="${esc(this.reviewer)}"
+             placeholder="${esc(t.dbgReviewerPlaceholder)}" autocomplete="email">
       <div class="lhw-fix-row">
         <button class="lhw-fix-send">${esc(t.dbgSave)}</button>
         <button class="lhw-fix-cancel">${esc(t.dbgCancel)}</button>
@@ -827,27 +842,38 @@
       </div>`);
     bubble.insertAdjacentElement('afterend', box);
 
-    const ta = box.querySelector('.lhw-fix-ta');
     box.querySelector('.lhw-fix-cancel').addEventListener('click', () => box.remove());
     box.querySelector('.lhw-fix-send').addEventListener('click', () =>
-      this.sendCorrection(box, userMessage, aiResponse, ta.value.trim()));
-    ta.focus();
+      this.sendCorrection(box, userMessage, aiResponse));
+    box.querySelector('.lhw-fix-ta').focus();
     this.scroll();
   };
 
-  Widget.prototype.sendCorrection = function (box, userMessage, aiResponse, expected) {
+  Widget.prototype.sendCorrection = function (box, userMessage, aiResponse) {
     const t = this.cfg.text;
     const btn = box.querySelector('.lhw-fix-send');
     const out = box.querySelector('.lhw-fix-msg');
+    const expected = box.querySelector('.lhw-fix-ta').value.trim();
+    const email = box.querySelector('.lhw-fix-email').value.trim();
     const show = (text, kind) => { out.textContent = text; out.className = 'lhw-fix-msg ' + (kind || ''); };
 
     if (!expected) { show(t.dbgEmpty, 'err'); return; }
+    if (!EMAIL_RE.test(email)) { show(t.dbgReviewerInvalid, 'err'); return; }
+
+    // Remembered so the next correction comes with it already filled in.
+    this.reviewer = email;
+    localStorage.setItem(LS_REVIEWER, email);
     btn.disabled = true; show(t.dbgSending);
 
     fetch(API.debug, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId, 'x-client-id': CLIENT_ID },
-      body: JSON.stringify({ user_message: userMessage, ai_response: aiResponse, expected_response: expected }),
+      body: JSON.stringify({
+        user_message: userMessage,
+        ai_response: aiResponse,
+        expected_response: expected,
+        reviewer_email: email,
+      }),
     })
       .then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, t)); }); })
       .then(() => { show(t.dbgSaved, 'ok'); setTimeout(() => box.remove(), 1200); })
