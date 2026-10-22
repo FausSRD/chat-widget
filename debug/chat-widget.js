@@ -43,10 +43,19 @@
     voice: `${GATEWAY_URL}/api/v2/widget/lead/voice`,
     ping: `${GATEWAY_URL}/api/v2/widget/lead/login/ping`,
     debug: `${GATEWAY_URL}/api/v2/widget/lead/debug`,
+    updates: `${GATEWAY_URL}/api/v2/widget/lead/updates`,
   };
 
   const LS_SESSION = `lh:${CLIENT_ID}:session`;
   const LS_MESSAGES = `lh:${CLIENT_ID}:messages`;
+  const LS_SEQ = `lh:${CLIENT_ID}:seq`;
+  const LS_GREETED = `lh:${CLIENT_ID}:greeted`;
+
+  // Poll cadence for staff messages: slow while the assistant answers, fast once a person took over.
+  const POLL_AI_MS = 20000;
+  const POLL_HUMAN_MS = 3000;
+  const POLL_BACKOFF_MS = 10000;
+  const POLL_MAX_FAILS = 3;
   // Reviewer email, kept per client so it survives reloads and is not asked on every correction.
   const LS_REVIEWER = `lh:${CLIENT_ID}:reviewer`;
 
@@ -90,6 +99,7 @@
     recaptchaSiteKey: null,          // site key PÚBLICA del client (si el client requiere captcha)
     activateMic: true,
     vehicleCards: true,              // habilita el render de cards de vehículos
+    openEvent: false,                // manda {event:'open'} al abrir el panel (greeting por página)
     // Textos de UI ("chrome"): TODO configurable por el backend para i18n
     // (es/en/pt/de/…). El backend puede mandar un `text` parcial y se mergea
     // con estos defaults. El contenido (welcomeMessage, quickReplies, etc.) va arriba.
@@ -123,6 +133,14 @@
       botFallback: 'No entendí, ¿podés reformular?',
       audioDisabled: 'El audio todavía no está habilitado en esta versión.',
       audioSent: '🎤 Audio enviado',
+      // takeover por una persona del equipo
+      staffName: 'Equipo',
+      connecting: 'conectando…',
+      // selector de visita
+      visitPick: 'Quiero agendar visita: {date} a las {time}',
+      calendarHint: 'Elegí día y hora',
+      dayNames: ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'],
+      monthNames: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
     dbgToggle: 'Modo revisión',
     dbgFlag: 'Corregir esta respuesta',
     dbgUser: 'Mensaje del usuario',
@@ -398,6 +416,17 @@
     .lhw-typing span:nth-child(2){ animation-delay:.2s; } .lhw-typing span:nth-child(3){ animation-delay:.4s; }
     @keyframes lhw-bounce { 0%,60%,100%{ transform: translateY(0);} 30%{ transform: translateY(-5px);} }
 
+    .lhw-sys { align-self: center; font-size: 12px; color: #6b7280; background: #eef2f7; border-radius: 12px; padding: 4px 12px; margin: 2px 0; text-align: center; }
+    .lhw-who { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .4px; opacity: .7; margin-bottom: 2px; }
+    .lhw-conn { font-size: 11.5px; color: #94a3b8; text-align: center; padding: 2px 0 6px; }
+    .lhw-cal { align-self: flex-start; max-width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 2px; }
+    .lhw-cal-days { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+    .lhw-cal-days::-webkit-scrollbar { display: none; }
+    .lhw-cal-days button, .lhw-cal-hours button { padding: 6px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: var(--brand); white-space: nowrap;
+      background: color-mix(in srgb, var(--brand) 10%, #fff); border: 1.5px solid color-mix(in srgb, var(--brand) 22%, transparent); }
+    .lhw-cal-days button.on { background: var(--brand); color: #fff; }
+    .lhw-cal-hours { display: flex; flex-wrap: wrap; gap: 6px; }
+    .lhw-cal.done button { opacity: .45; pointer-events: none; }
     .lhw-quick { display: flex; flex-wrap: wrap; gap: 8px; align-self: flex-start; max-width: 100%; margin-top: 2px; }
     .lhw-quick button { padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--brand);
       background: color-mix(in srgb, var(--brand) 10%, #fff); border: 1.5px solid color-mix(in srgb, var(--brand) 22%, transparent); transition: background .2s; }
@@ -565,6 +594,7 @@
       minBtn: panel.querySelector('.lhw-min'),
       dbgBtn: panel.querySelector('.lhw-dbg'),
       body: panel.querySelector('.lhw-body'),
+      header: panel.querySelector('.lhw-header'),
       form: panel.querySelector('.lhw-form'),
       recaptcha: panel.querySelector('.lhw-recaptcha'),
       msgs: panel.querySelector('.lhw-msgs'),
@@ -587,6 +617,12 @@
     this.opened = false;
     this.recorder = null;
     this.chunks = [];
+    this.mode = 'ai';
+    this.takenBy = null;
+    this.lastSeq = Number(localStorage.getItem(LS_SEQ) || 0);
+    this.pollTimer = null;
+    this.pollInFlight = false;
+    this.pollFails = 0;
   }
 
   Widget.prototype.init = function () {
@@ -615,6 +651,8 @@
     // (invita a abrir, como un "tenés un mensaje"). Se limpia al abrir. El caso "respuesta llega con
     // el chat cerrado" ya lo marca addBot.
     setTimeout(() => { if (!this.opened) this.els.launcher.classList.add('unread'); }, 2000);
+
+    document.addEventListener('visibilitychange', () => { document.hidden ? this.stopPolling() : this.startPolling(); });
   };
 
   /* ---- abrir / cerrar --------------------------------------------------- */
@@ -623,9 +661,10 @@
     this.els.panel.classList.add('open');
     this.els.launcher.classList.remove('unread');
     if (this.els.hint) this.els.hint.style.display = 'none';
-    if (!this.opened) { this.opened = true; this.ping(); }
+    if (!this.opened) { this.opened = true; this.ping(); } else { this.startPolling(); }
   };
-  Widget.prototype.close = function () { this.els.panel.classList.remove('open'); };
+  Widget.prototype.close = function () { this.els.panel.classList.remove('open'); this.stopPolling(); };
+  Widget.prototype.isOpen = function () { return this.els.panel.classList.contains('open'); };
 
   /* ---- sesión: ping para saber si seguimos logueados -------------------- */
   Widget.prototype.ping = function () {
@@ -636,8 +675,8 @@
   };
 
   Widget.prototype.resetSession = function () {
-    this.sessionId = null; this.messages = [];
-    localStorage.removeItem(LS_SESSION); localStorage.removeItem(LS_MESSAGES);
+    this.sessionId = null; this.messages = []; this.lastSeq = 0; this.stopPolling();
+    localStorage.removeItem(LS_SESSION); localStorage.removeItem(LS_MESSAGES); localStorage.removeItem(LS_SEQ); localStorage.removeItem(LS_GREETED);
     this.showForm();
   };
 
@@ -651,13 +690,98 @@
     this.els.form.style.display = 'none';
     this.els.msgs.style.display = 'flex';
     this.els.inputbar.style.display = 'flex';
-    if (this.messages.length === 0) {
+    if (this.messages.length === 0 && !this.cfg.openEvent) {
       this.printBot(this.cfg.welcomeMessage);
       this.printQuickReplies(this.cfg.quickReplies);
     } else {
-      this.messages.forEach((m, i) => m.role === 'user' ? this.printUser(m.content) : this.printBot(m.content, m.vehicles, i));
+      this.messages.forEach((m, i) => {
+        if (m.role === 'user') this.printUser(m.content);
+        else if (m.role === 'system') this.printSystem(m.content);
+        else if (m.role === 'staff') this.printStaff(m.content, m.name);
+        else this.printBot(m.content, m.vehicles, i);
+      });
       this.scroll();
     }
+    if (this.cfg.openEvent) this.sendOpenEvent();
+    this.startPolling();
+  };
+
+  /* ---- evento open: saludo contextual por página (detrás de cfg.openEvent) ---- */
+  Widget.prototype.sendOpenEvent = function () {
+    if (this.busy) return;
+    const tx = this.cfg.text;
+    const typing = this.showTyping();
+    this.busy = true;
+    this.request({ message: '', event: 'open' })
+      .then((data) => {
+        typing.remove();
+        this.applyMode(data.mode);
+        if (typeof data.output === 'string' && data.output) { this.addBot(data.output, data.vehicles); localStorage.setItem(LS_GREETED, '1'); return; }
+        if (data.greeted === true) { localStorage.setItem(LS_GREETED, '1'); return; }
+        if (this.messages.length === 0 && !localStorage.getItem(LS_GREETED)) { this.printBot(this.cfg.welcomeMessage); this.printQuickReplies(this.cfg.quickReplies); }
+      })
+      .catch(() => { typing.remove(); if (this.messages.length === 0) this.printBot(this.cfg.welcomeMessage); })
+      .finally(() => { this.busy = false; });
+  };
+
+  /* ---- POST /chat con el cuerpo completo del contrato ------------------ */
+  Widget.prototype.request = function (fields) {
+    const tx = this.cfg.text;
+    const pageUrl = /^https?:/.test(location.href) ? location.href : '';
+    const body = Object.assign({ message: '', page_url: pageUrl, event: '', slot: '', vehicle_id: '' }, fields);
+    return fetch(API.chat, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId, 'x-client-id': CLIENT_ID },
+      body: JSON.stringify(body),
+    }).then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, tx)); }); return r.json(); });
+  };
+
+  /* ---- polling de mensajes del equipo (dina/system) --------------------- */
+  Widget.prototype.startPolling = function () {
+    // Read before stopPolling: it nulls pollTimer, which would make every cycle look like the first
+    // one and poll with no delay at all.
+    const first = this.pollTimer === null && this.pollFails === 0;
+    this.stopPolling();
+    if (!this.sessionId || !this.isOpen() || document.hidden) return;
+    const delay = this.pollFails >= POLL_MAX_FAILS ? POLL_BACKOFF_MS : (this.mode === 'human' ? POLL_HUMAN_MS : POLL_AI_MS);
+    this.pollTimer = setTimeout(() => this.pollTick(), first ? 0 : delay);
+  };
+  Widget.prototype.stopPolling = function () { if (this.pollTimer) clearTimeout(this.pollTimer); this.pollTimer = null; };
+  Widget.prototype.pollTick = function () {
+    if (this.pollInFlight) { this.startPolling(); return; }
+    this.pollInFlight = true;
+    fetch(`${API.updates}?after=${this.lastSeq}`, { headers: { 'x-session-id': this.sessionId, 'x-client-id': CLIENT_ID } })
+      .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then((data) => {
+        this.pollFails = 0; this.setConnecting(false);
+        (data.messages || []).forEach((m) => {
+          if (typeof m.seq !== 'number' || m.seq <= this.lastSeq) return;
+          this.lastSeq = m.seq;
+          if (m.author === 'system') this.addSystem(m.text);
+          else if (m.author === 'dina') this.addStaff(m.text, data.taken_by);
+        });
+        if (typeof data.seq === 'number' && data.seq > this.lastSeq) this.lastSeq = data.seq;
+        localStorage.setItem(LS_SEQ, String(this.lastSeq));
+        this.applyMode(data.mode, data.taken_by);
+      })
+      .catch(() => { this.pollFails += 1; if (this.pollFails >= POLL_MAX_FAILS) this.setConnecting(true); })
+      .finally(() => { this.pollInFlight = false; this.startPolling(); });
+  };
+  Widget.prototype.setConnecting = function (on) {
+    let el = this.els.panel.querySelector('.lhw-conn');
+    if (on && !el) { el = h('div', 'lhw-conn'); el.textContent = this.cfg.text.connecting; this.els.header.insertAdjacentElement('afterend', el); }
+    if (!on && el) el.remove();
+  };
+
+  /* ---- modo ai / human: cabecera y cadencia del polling ----------------- */
+  Widget.prototype.applyMode = function (mode, takenBy) {
+    if (mode !== 'ai' && mode !== 'human') return;
+    const changed = mode !== this.mode;
+    this.mode = mode;
+    if (takenBy !== undefined) this.takenBy = takenBy;
+    const name = this.els.panel.querySelector('.lhw-hname');
+    if (name) name.textContent = mode === 'human' ? (this.takenBy || this.cfg.text.staffName) : this.cfg.agentName;
+    if (changed && this.pollTimer) this.startPolling();
   };
 
   /* ---- registro (cuestionario → lead/login) ----------------------------- */
@@ -714,7 +838,7 @@
 
   /* ---- mensajes --------------------------------------------------------- */
   Widget.prototype.sendCurrent = function () { this.send(this.els.ta.value.trim()); };
-  Widget.prototype.send = function (text) {
+  Widget.prototype.send = function (text, extra) {
     if (!text || this.busy) return;
     const tx = this.cfg.text;
     const quick = this.els.msgs.querySelector('.lhw-quick');
@@ -725,16 +849,19 @@
     this.busy = true;
 
     const done = () => { this.busy = false; };
-    const req = fetch(API.chat, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-session-id': this.sessionId, 'x-client-id': CLIENT_ID },
-          body: JSON.stringify({ message: text }),
-        }).then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, tx)); }); return r.json(); });
-
-    req
-      .then((data) => { typing.remove(); this.addBot(data.output || tx.botFallback, data.vehicles); })
+    this.request(Object.assign({ message: text }, extra || {}))
+      .then((data) => { typing.remove(); this.handleReply(data); })
       .catch((err) => { typing.remove(); this.addBot(err.message || tx.errGeneric); })
       .finally(done);
+  };
+
+  /* ---- respuesta de /chat: output null = sin burbuja; flags; calendario -- */
+  Widget.prototype.handleReply = function (data) {
+    this.applyMode(data.mode);
+    if (data.duplicate === true || data.suppressed === true) return;
+    if (typeof data.output === 'string' && data.output) this.addBot(data.output, data.vehicles);
+    else if (data.output === undefined && this.mode !== 'human') this.addBot(this.cfg.text.botFallback);
+    if (data.calendar && data.calendar.slots) this.printCalendar(data.calendar);
   };
 
   /* ---- nota de voz → backend (/voice), mismo flujo que un mensaje ------- */
@@ -759,9 +886,21 @@
         }).then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, tx)); }); return r.json(); }));
 
     req
-      .then((data) => { typing.remove(); this.addBot(data.output || tx.botFallback, data.vehicles); })
+      .then((data) => { typing.remove(); this.handleReply(data); })
       .catch((err) => { typing.remove(); this.addBot(err.message || tx.errGeneric); })
       .finally(done);
+  };
+
+  Widget.prototype.addSystem = function (text) {
+    this.printSystem(text);
+    this.messages.push({ role: 'system', content: text });
+    this.persist();
+  };
+  Widget.prototype.addStaff = function (text, name) {
+    this.printStaff(text, name);
+    this.messages.push({ role: 'staff', content: text, name: name || null });
+    this.persist();
+    if (!this.isOpen()) this.els.launcher.classList.add('unread');
   };
 
   Widget.prototype.addUser = function (text) {
@@ -878,6 +1017,62 @@
       .then((r) => { if (!r.ok) return r.json().then((b) => { throw new Error(mapError(b, t)); }); })
       .then(() => { show(t.dbgSaved, 'ok'); setTimeout(() => box.remove(), 1200); })
       .catch((err) => { btn.disabled = false; show(err.message || t.dbgFail, 'err'); });
+  };
+
+  Widget.prototype.printSystem = function (text) {
+    const el = h('div', 'lhw-sys'); el.textContent = text;
+    this.els.msgs.appendChild(el); this.scroll();
+  };
+  Widget.prototype.printStaff = function (text, name) {
+    const html = `<span class="lhw-who">${esc(name || this.cfg.text.staffName)}</span>` + esc(text).replace(/\n/g, '<br>');
+    const el = h('div', 'lhw-msg lhw-bot lhw-staff', html);
+    this.els.msgs.appendChild(el); this.scroll();
+  };
+
+  // Offset (+01:00) of a wall-clock time in a zone, so the slot stays as the visitor saw it.
+  function tzOffset(date, time, tz) {
+    try {
+      const probe = new Date(`${date}T${time}:00Z`);
+      const part = new Intl.DateTimeFormat('en-US', { timeZone: tz || 'Europe/Lisbon', timeZoneName: 'longOffset' }).formatToParts(probe).find((x) => x.type === 'timeZoneName');
+      const m = part && /GMT([+-]\d{2}:\d{2})?/.exec(part.value);
+      return m && m[1] ? m[1] : '+00:00';
+    } catch (_) { return ''; }
+  }
+
+  /* ---- selector de visita: días (hasta 14) y horas del día elegido ------ */
+  Widget.prototype.printCalendar = function (calendar) {
+    const t = this.cfg.text;
+    const slots = (calendar.slots || []).filter((d) => d && d.date && d.times && d.times.length).slice(0, 14);
+    if (!slots.length) return;
+    const wrap = h('div', 'lhw-cal');
+    const hint = h('div', 'lhw-sys'); hint.textContent = t.calendarHint;
+    const days = h('div', 'lhw-cal-days');
+    const hours = h('div', 'lhw-cal-hours');
+    const dayLabel = (iso) => {
+      const d = new Date(iso + 'T12:00:00');
+      return `${t.dayNames[d.getDay()]} ${d.getDate()} ${t.monthNames[d.getMonth()]}`;
+    };
+    const pick = (day, time) => {
+      wrap.classList.add('done');
+      const [y, m, dd] = day.date.split('-');
+      const msg = t.visitPick.replace('{date}', `${dd}/${m}`).replace('{time}', time);
+      const slot = `${day.date}T${time}:00${tzOffset(day.date, time, calendar.timezone)}`;
+      this.send(msg, { event: 'visit_pick', slot, vehicle_id: calendar.vehicle_id || '' });
+      setTimeout(() => wrap.remove(), 400);
+    };
+    const showDay = (day, btn) => {
+      days.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === btn));
+      hours.innerHTML = '';
+      day.times.forEach((time) => { const b = h('button'); b.textContent = time; b.addEventListener('click', () => pick(day, time)); hours.appendChild(b); });
+    };
+    slots.forEach((day, i) => {
+      const b = h('button'); b.textContent = dayLabel(day.date);
+      b.addEventListener('click', () => showDay(day, b));
+      days.appendChild(b);
+      if (i === 0) showDay(day, b);
+    });
+    wrap.appendChild(hint); wrap.appendChild(days); wrap.appendChild(hours);
+    this.els.msgs.appendChild(wrap); this.scroll();
   };
 
   Widget.prototype.printQuickReplies = function (options) {
