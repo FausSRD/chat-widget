@@ -678,10 +678,13 @@
 
   /* ---- polling de mensajes del equipo (dina/system) --------------------- */
   Widget.prototype.startPolling = function () {
+    // Read before stopPolling: it nulls pollTimer, which would make every cycle look like the first
+    // one and poll with no delay at all.
+    const first = this.pollTimer === null && this.pollFails === 0;
     this.stopPolling();
     if (!this.sessionId || !this.isOpen() || document.hidden) return;
     const delay = this.pollFails >= POLL_MAX_FAILS ? POLL_BACKOFF_MS : (this.mode === 'human' ? POLL_HUMAN_MS : POLL_AI_MS);
-    this.pollTimer = setTimeout(() => this.pollTick(), this.pollTimer === null && this.pollFails === 0 ? 0 : delay);
+    this.pollTimer = setTimeout(() => this.pollTick(), first ? 0 : delay);
   };
   Widget.prototype.stopPolling = function () { if (this.pollTimer) clearTimeout(this.pollTimer); this.pollTimer = null; };
   Widget.prototype.pollTick = function () {
